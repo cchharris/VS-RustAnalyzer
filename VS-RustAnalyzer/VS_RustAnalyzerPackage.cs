@@ -25,6 +25,8 @@ namespace VS_RustAnalyzer
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(VS_RustAnalyzerPackage.PackageGuidString)]
+    [ProvideOptionPage(typeof(GeneralOptions),
+        "Rust Analyzer", "General", 0, 0, true)]
     public sealed class VS_RustAnalyzerPackage : AsyncPackage
     {
         /// <summary>
