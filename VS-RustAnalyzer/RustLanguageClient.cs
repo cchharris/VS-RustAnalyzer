@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
+using StreamJsonRpc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -17,7 +18,7 @@ namespace VS_RustAnalyzer
 {
     [ContentType("rust")]
     [Export(typeof(ILanguageClient))]
-    internal class RustLanguageClient : ILanguageClient
+    internal class RustLanguageClient : ILanguageClient, ILanguageClientCustomMessage2
     {
         public string Name => "Rust Language Extension";
 
@@ -34,6 +35,15 @@ namespace VS_RustAnalyzer
         public string ExecutablePath => @"C:\Users\cchha\.rust-analyzer\rust-analyzer-x86_64-pc-windows-msvc\rust-analyzer.exe";
 
         public bool ShowNotificationOnInitializeFailed => true;
+
+        public object MiddleLayer => RustLanguageClientMiddleLayer.Instance;
+
+        public object CustomMessageTarget {get;}
+
+        RustLanguageClient()
+        {
+            CustomMessageTarget = new MessageHandler();
+        }
 
         public async Task<Connection> ActivateAsync(CancellationToken token)
         {
@@ -74,7 +84,19 @@ namespace VS_RustAnalyzer
 
         public Task<InitializationFailureContext> OnServerInitializeFailedAsync(ILanguageClientInitializationInfo initializationState)
         {
-            throw new NotImplementedException();
+            var ret = new InitializationFailureContext();
+            ret.FailureMessage = $"${Name} - {initializationState.StatusMessage} - {initializationState.InitializationException}";
+            return Task.FromResult(ret);
+        }
+
+        public Task AttachForCustomMessageAsync(JsonRpc rpc)
+        {
+            return Task.CompletedTask;
+        }
+
+        public class MessageHandler
+        {
+
         }
     }
 }
