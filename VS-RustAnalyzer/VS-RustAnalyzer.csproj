@@ -81,6 +81,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".pkgdef" />
+    <Content Include="Licenses.txt" />
+    <Content Include="rust-logo-512x512.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <VSCTCompile Include="VS_RustAnalyzerPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>

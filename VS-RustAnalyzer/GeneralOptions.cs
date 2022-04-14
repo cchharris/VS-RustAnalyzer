@@ -14,7 +14,7 @@ namespace VS_RustAnalyzer
 
         [Category("Setup")]
         [DisplayName("Path to rust-analyzer.exe")]
-        [Description("Full path to the rust-analyzer exe")]
+        [Description("NOT_WORKING_YET: Full path to the rust-analyzer exe")]
         public string RustAnalyzerPath {
             get { return rustAnalyzerPath; }
             set { rustAnalyzerPath = value; }

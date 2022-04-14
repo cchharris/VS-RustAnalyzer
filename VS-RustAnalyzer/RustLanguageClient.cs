@@ -20,7 +20,7 @@ namespace VS_RustAnalyzer
     [Export(typeof(ILanguageClient))]
     internal class RustLanguageClient : ILanguageClient, ILanguageClientCustomMessage2
     {
-        public string Name => "Rust Language Extension";
+        public string Name => "VS-RustAnalyzer";
 
         public IEnumerable<string> ConfigurationSections => null;
 
@@ -32,7 +32,7 @@ namespace VS_RustAnalyzer
         public event AsyncEventHandler<EventArgs> StopAsync;
 
         // TODO: Configure
-        public string ExecutablePath => @"C:\Users\cchha\.rust-analyzer\rust-analyzer-x86_64-pc-windows-msvc\rust-analyzer.exe";
+        public string ExecutablePath => @"rust-analyzer.exe";
 
         public bool ShowNotificationOnInitializeFailed => true;
 
@@ -47,7 +47,7 @@ namespace VS_RustAnalyzer
 
         public async Task<Connection> ActivateAsync(CancellationToken token)
         {
-            await Task.Yield();
+            // await Task.Yield(); // Default Boilerplate
 
             ProcessStartInfo info = new ProcessStartInfo();
             info.FileName = ExecutablePath;

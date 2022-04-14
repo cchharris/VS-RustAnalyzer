@@ -15,8 +15,8 @@ namespace VS_RustAnalyzer
 
         public bool CanHandle(string methodName)
         {
-            if (methodName == "textDocument/documentColor" || methodName.StartsWith("textDocument/semanticTokens"))
-                return true;
+            //if (methodName == "textDocument/documentColor" || methodName.StartsWith("textDocument/semanticTokens"))
+            //    return false;
             return false;
         }
 
