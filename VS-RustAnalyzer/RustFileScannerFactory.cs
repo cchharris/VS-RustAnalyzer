@@ -51,7 +51,7 @@ namespace VS_RustAnalyzer
                 else if (Util.IsCargoFile(filePath))
                 {
                     ret.Add(new FileDataValue(new Guid(RustFileContextFactory.ProviderType), Path.GetFileName(filePath), filePath, context: null));
-                    ret.Add(new FileDataValue(new Guid(Builds.BuildType), "Build", filePath, context: Builds.BuildContextInstance.BuildConfiguration));
+                    ret.Add(new FileDataValue(new Guid(Builds.BuildType), "Build", null, context: Builds.BuildContextInstance.BuildConfiguration));
                 }
 
                 return await Task.FromResult((T)(IReadOnlyCollection<FileDataValue>)ret);

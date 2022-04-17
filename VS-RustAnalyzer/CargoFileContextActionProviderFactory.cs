@@ -1,5 +1,8 @@
-﻿using Microsoft.VisualStudio.Workspace;
-//using Microsoft.VisualStudio.Workspace.Extensions.VS;
+﻿using Microsoft.VisualStudio.Threading;
+using Microsoft.VisualStudio.Workspace;
+using Microsoft.VisualStudio.Workspace.Build;
+using Microsoft.VisualStudio.Workspace.Extensions.VS;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,7 +51,7 @@ namespace VS_RustAnalyzer
                 Clean = 0x1020
             }
 
-            internal class BuildContextAction : IFileContextAction//, IVsCommandItem
+            internal class BuildContextAction : IFileContextAction, IVsCommandItem
             {
                 private readonly IWorkspace _workspace;
                 private readonly string _filePath;
@@ -81,14 +84,15 @@ namespace VS_RustAnalyzer
                     public bool IsSuccess => _success;
                 }
 
-                public Task<IFileContextActionResult> ExecuteAsync(IProgress<IFileContextActionProgressUpdate> progress, CancellationToken cancellationToken)
+                public async Task<IFileContextActionResult> ExecuteAsync(IProgress<IFileContextActionProgressUpdate> progress, CancellationToken cancellationToken)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    return Task.Factory.StartNew(() => {
+                    await TaskScheduler.Default;
+                    return await _workspace.JTF.RunAsync<IFileContextActionResult>(async () => {
                         ProcessStartInfo info = new ProcessStartInfo()
                         {
                             FileName = "cargo", 
-                            Arguments = "build",
+                            Arguments = "build --message-format json",
                             WorkingDirectory = Path.GetDirectoryName(_filePath),
                             UseShellExecute = false,
                             CreateNoWindow = true,
@@ -100,9 +104,19 @@ namespace VS_RustAnalyzer
                         result.Start();
                         result.BeginErrorReadLine();
                         result.BeginOutputReadLine();
+
+                        result.OutputDataReceived += (a, e) => {
+                            if (string.IsNullOrEmpty(e.Data)) return;
+
+                            var data = JsonConvert.DeserializeObject(e.Data);
+
+                            BuildMessage message = new BuildMessage();
+                            _workspace.GetBuildMessageService().ReportBuildMessages(new BuildMessage[] { message });
+                        };
+
                         result.WaitForExit();
-                        return new BuildResult(result.ExitCode == 0) as IFileContextActionResult;
-                    }, cancellationToken);
+                        return await Task.FromResult(new BuildResult(result.ExitCode == 0));
+                    }).JoinAsync();
                 }
             }
         }
