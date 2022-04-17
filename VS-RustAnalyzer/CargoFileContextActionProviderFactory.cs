@@ -35,7 +35,7 @@ namespace VS_RustAnalyzer
 
                 List<IFileContextAction> actions = new List<IFileContextAction>();
                 actions.Add(new BuildContextAction(_workspace, filePath, fileContext));
-                return actions;
+                return await Task.FromResult(actions);
             }
 
             /// <summary>

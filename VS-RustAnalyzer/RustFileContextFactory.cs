@@ -9,7 +9,12 @@ using System.Threading.Tasks;
 
 namespace VS_RustAnalyzer
 {
-    [ExportFileContextProvider(ProviderType, new string[] { PackageIds.RsFileContextType, PackageIds.CargoFileContextType })]
+    [ExportFileContextProvider(ProviderType,
+        new string[] {
+            PackageIds.RsFileContextType,
+            PackageIds.CargoFileContextType,
+            BuildContextTypes.BuildContextType
+        })]
     internal class RustFileContextFactory : IWorkspaceProviderFactory<IFileContextProvider>
     {
         public const string ProviderType = "23E0D514-FDCE-476F-95F6-74CA640EF7FE";
@@ -43,6 +48,8 @@ namespace VS_RustAnalyzer
                         new Guid(ProviderType),
                         new Guid(PackageIds.CargoFileContextType),
                         filePath + '\n', Array.Empty<string>()));
+                    fileContexts.Add(new FileContext(new Guid(ProviderType),
+                        BuildContextTypes.BuildContextTypeGuid, Builds.BuildContextInstance, new string[] {filePath}));
                 }
 
                 return await Task.FromResult(fileContexts.ToArray());
