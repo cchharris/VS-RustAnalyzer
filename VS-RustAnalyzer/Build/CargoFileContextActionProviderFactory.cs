@@ -38,6 +38,9 @@ namespace VS_RustAnalyzer
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                /**
+                 *  These are the right-click drop down actions in Solution Explorer
+                 */
                 List<IFileContextAction> actions = new List<IFileContextAction>();
                 actions.Add(new BuildContextAction(_workspace, filePath, fileContext));
                 return await Task.FromResult(actions);
@@ -130,7 +133,7 @@ namespace VS_RustAnalyzer
                             BuildMessage message = new BuildMessage();
                             message.ProjectFile = data.ManifestPath;
                             message.Type =  taskType;
-                            message.LogMessage = data.MessageData.Rendered;
+                            message.LogMessage = data.MessageData.Rendered; // Logs to the Build pane
                             message.TaskText = data.MessageData.Rendered;
                             message.Code = data.MessageData.CodeData?.Code;
                             if(data.MessageData.Spans.Count > 0)

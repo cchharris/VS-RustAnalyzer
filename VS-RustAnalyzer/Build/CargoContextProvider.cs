@@ -14,7 +14,8 @@ namespace VS_RustAnalyzer.Build
     [ExportFileContextProvider(ProviderType,
         new string[] {
             PackageIds.CargoFileContextType,
-            BuildContextTypes.BuildContextType
+            BuildContextTypes.BuildContextType,
+            BuildContextTypes.CleanContextType,
         })]
     internal class CargoContextProviderFactory : IWorkspaceProviderFactory<IFileContextProvider>
     {
@@ -39,10 +40,17 @@ namespace VS_RustAnalyzer.Build
                 var fileContexts = new List<FileContext>();
                 if (Util.IsCargoFile(filePath))
                 {
-                    var launchCommand = new LaunchCommand("cargo", "build", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
-                    var buildActionContext = new BuildActionContext(new LaunchCommand[] { launchCommand }, "Cargo build configuration");
+                    /**
+                     * These are the menu items across the top of Visual Studio
+                     */
+                    var buildLaunchCommand = new LaunchCommand("cargo", "build", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
+                    var buildActionContext = new BuildActionContext(new LaunchCommand[] { buildLaunchCommand }, "Cargo build configuration");
                     fileContexts.Add(new FileContext(new Guid(ProviderType),
                         BuildActionContext.ContextTypeGuid, buildActionContext, new string[] {filePath}));
+                    var cleanLaunchCommand = new LaunchCommand("cargo", "clean", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
+                    var cleanActionContext = new BuildActionContext(new LaunchCommand[] { cleanLaunchCommand }, "Cargo clean configuration");
+                    fileContexts.Add(new FileContext(new Guid(ProviderType),
+                        BuildActionContext.CleanContextTypeGuid, cleanActionContext, new string[] {filePath}));
                 }
 
                 return await Task.FromResult(fileContexts);

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Workspace.Debug;
 using Microsoft.VisualStudio.Workspace.Indexing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -52,11 +53,18 @@ namespace VS_RustAnalyzer.Build
                     var readerService = _workspace.GetService<ICargoReaderService>();
                     var cargoManifest = readerService.CargoManifestForFile(filePath);
 
+                    //TODO Limit only to bin
+                    //TODO Get output location
+                    // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
+                    var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName);
+
                     ret.Add(new FileDataValue(new Guid(Builds.BuildType), "Build", null, context: Builds.BuildContextInstance.BuildConfiguration));
                     IPropertySettings launchSettings = new PropertySettings
                     {
+                        ["StartupProject"] = filePath,
                         [LaunchConfigurationConstants.NameKey] = cargoManifest.PackageName,
                         [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
+                        [LaunchConfigurationConstants.TargetKey] = $"{output}.exe",
                     };
 
                     ret.Add(new FileDataValue(
