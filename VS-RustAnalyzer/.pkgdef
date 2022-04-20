@@ -1,3 +1,9 @@
 ﻿[$RootKey$\TextMate\Repositories]
 "rust"="$PackageFolder$\Grammars"
 "toml"="$PackageFolder$\Grammars"
+
+[$RootKey$\ShellFileAssociations\.rs]
+"DefaultIconMoniker"="e5e12661-b8a3-4517-8ffb-f188407ed7a7:1"
+
+[$RootKey$\ShellFileAssociations\.toml]
+"DefaultIconMoniker"="e5e12661-b8a3-4517-8ffb-f188407ed7a7:0"
