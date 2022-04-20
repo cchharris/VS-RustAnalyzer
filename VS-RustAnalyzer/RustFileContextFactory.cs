@@ -52,10 +52,6 @@ namespace VS_RustAnalyzer
                         new Guid(ProviderType),
                         new Guid(PackageIds.CargoFileContextType),
                         filePath + '\n', Array.Empty<string>()));
-                    var launchCommand = new LaunchCommand("cargo", "build", LaunchCommandOption.None, Path.GetDirectoryName(filePath));
-                    var buildActionContext = new BuildActionContext(new LaunchCommand[] { launchCommand }, "Cargo build configuration");
-                    fileContexts.Add(new FileContext(new Guid(ProviderType),
-                        BuildActionContext.ContextTypeGuid, buildActionContext, new string[] {filePath}));
                 }
 
                 return await Task.FromResult(fileContexts.ToArray());

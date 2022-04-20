@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using VS_RustAnalyzer.Cargo;
 
 namespace VS_RustAnalyzer.Build
 {
@@ -47,12 +48,15 @@ namespace VS_RustAnalyzer.Build
 
                 if (Util.IsCargoFile(filePath))
                 {
+                    var readerService = _workspace.GetService<ICargoReaderService>();
+                    var cargoManifest = readerService.CargoManifestForFile(filePath);
+
                     ret.Add(new FileDataValue(new Guid(Builds.BuildType), "Build", null, context: Builds.BuildContextInstance.BuildConfiguration));
                     IPropertySettings launchSettings = new PropertySettings
                     {
-                        [LaunchConfigurationConstants.NameKey] = "Cargo.toml",
+                        [LaunchConfigurationConstants.NameKey] = cargoManifest.PackageName,
                         [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
-                        [LaunchConfigurationConstants.ArgsKey] = "cargo run",
+                        [LaunchConfigurationConstants.ArgsKey] = "echo foo",
                     };
 
                     ret.Add(new FileDataValue(

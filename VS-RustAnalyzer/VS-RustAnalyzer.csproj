@@ -47,9 +47,17 @@
   <ItemGroup>
     <Compile Include="Builds.cs" />
     <Compile Include="Build\CargoBuildScanner.cs" />
-    <Compile Include="CargoFileContextActionProviderFactory.cs" />
+    <Compile Include="Build\CargoContextProvider.cs" />
+    <Compile Include="Build\CargoFileContextActionProviderFactory.cs" />
+    <Compile Include="Cargo\CargoManifest.cs" />
+    <Compile Include="Cargo\CargoReaderService.cs" />
+    <Compile Include="Cargo\ICargoManifest.cs" />
+    <Compile Include="Cargo\ICargoReaderService.cs" />
+    <Compile Include="Cargo\ICargoTarget.cs" />
     <Compile Include="Cargo\Json\CompilerMessage.cs" />
     <Compile Include="Cargo\Json\RustcMessage.cs" />
+    <Compile Include="Cargo\Toml\CargoPackageToml.cs" />
+    <Compile Include="Cargo\Toml\CargoToml.cs" />
     <Compile Include="RustFileScannerFactory.cs" />
     <Compile Include="RustFileContextFactory.cs" />
     <Compile Include="GeneralOptions.cs">
@@ -106,8 +114,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".pkgdef" />
-    <Content Include="Licenses.txt" />
-    <Content Include="rust-logo-512x512.png">
+    <Content Include="Assets\Licenses.txt" />
+    <Content Include="Assets\rust-logo-512x512.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

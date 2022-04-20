@@ -109,6 +109,7 @@ namespace VS_RustAnalyzer
 
                             var data = JsonConvert.DeserializeObject<CompilerMessage>(e.Data);
                             if (data == null) return;
+                            if (!data.Reason.Equals("compiler-message")) return;
 
                             List<BuildMessage> messages = new List<BuildMessage>();
                             var messagedata = data.MessageData;
