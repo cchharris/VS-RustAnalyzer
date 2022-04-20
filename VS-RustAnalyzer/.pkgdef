@@ -1,2 +1,3 @@
 ﻿[$RootKey$\TextMate\Repositories]
 "rust"="$PackageFolder$\Grammars"
+"toml"="$PackageFolder$\Grammars"
