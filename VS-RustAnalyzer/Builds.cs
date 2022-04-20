@@ -12,7 +12,6 @@ namespace VS_RustAnalyzer
         public const string BuildType = "670BD024-805F-4125-9E31-1D0454C7F576";
         public static IBuildConfigurationContext BuildContextInstance = new BuildContext();
 
-
         internal class BuildContext : IBuildConfigurationContext
         {
             public string BuildConfiguration => "Cargo Build";

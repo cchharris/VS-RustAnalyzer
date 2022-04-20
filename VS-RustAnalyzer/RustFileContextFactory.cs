@@ -1,7 +1,10 @@
 ﻿using Microsoft.VisualStudio.Workspace;
 using Microsoft.VisualStudio.Workspace.Build;
+using Microsoft.VisualStudio.Workspace.Debug;
+using Microsoft.VisualStudio.Workspace.Extensions.Build;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -18,6 +21,7 @@ namespace VS_RustAnalyzer
     internal class RustFileContextFactory : IWorkspaceProviderFactory<IFileContextProvider>
     {
         public const string ProviderType = "23E0D514-FDCE-476F-95F6-74CA640EF7FE";
+        public static readonly Guid ProviderTypeGuid = new Guid(ProviderType);
 
         public IFileContextProvider CreateProvider(IWorkspace workspaceContext)
         {
@@ -48,8 +52,10 @@ namespace VS_RustAnalyzer
                         new Guid(ProviderType),
                         new Guid(PackageIds.CargoFileContextType),
                         filePath + '\n', Array.Empty<string>()));
+                    var launchCommand = new LaunchCommand("cargo", "build", LaunchCommandOption.None, Path.GetDirectoryName(filePath));
+                    var buildActionContext = new BuildActionContext(new LaunchCommand[] { launchCommand }, "Cargo build configuration");
                     fileContexts.Add(new FileContext(new Guid(ProviderType),
-                        BuildContextTypes.BuildContextTypeGuid, Builds.BuildContextInstance, new string[] {filePath}));
+                        BuildActionContext.ContextTypeGuid, buildActionContext, new string[] {filePath}));
                 }
 
                 return await Task.FromResult(fileContexts.ToArray());

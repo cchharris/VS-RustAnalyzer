@@ -18,6 +18,7 @@ namespace VS_RustAnalyzer
     internal class CargoFileContextActionProviderFactory : IWorkspaceProviderFactory<IFileContextActionProvider>
     {
         public const string ProviderType = "2CC51F9D-9749-4CFD-A8E9-B6E9FE2E787B";
+        public static readonly Guid ProviderTypeGuid = new Guid(ProviderType);
 
         public IFileContextActionProvider CreateProvider(IWorkspace workspaceContext)
         {
