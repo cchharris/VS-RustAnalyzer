@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using VS_RustAnalyzer.Cargo.Json;
 
 namespace VS_RustAnalyzer
 {
@@ -102,19 +103,38 @@ namespace VS_RustAnalyzer
                             RedirectStandardOutput = true,
                         };
                         var result = Process.Start(info);
-                        result.Start();
-                        result.BeginErrorReadLine();
-                        result.BeginOutputReadLine();
 
                         result.OutputDataReceived += (a, e) => {
                             if (string.IsNullOrEmpty(e.Data)) return;
 
-                            var data = JsonConvert.DeserializeObject(e.Data);
+                            var data = JsonConvert.DeserializeObject<CompilerMessage>(e.Data);
+                            if (data == null) return;
 
+                            List<BuildMessage> messages = new List<BuildMessage>();
+                            var messagedata = data.MessageData;
+                            string errorLevel = messagedata.Level;
+                            BuildMessage.TaskType taskType;
+                            if (errorLevel.Equals("error", StringComparison.OrdinalIgnoreCase))
+                            {
+                                taskType = BuildMessage.TaskType.Error;
+                            }
+                            else if (errorLevel.Equals("warning", StringComparison.OrdinalIgnoreCase))
+                            {
+                                taskType = BuildMessage.TaskType.Warning;
+                            }
+                            else
+                            {
+                                taskType = BuildMessage.TaskType.None;
+                            }
                             BuildMessage message = new BuildMessage();
-                            _workspace.GetBuildMessageService().ReportBuildMessages(new BuildMessage[] { message });
+                            message.ProjectFile = data.ManifestPath;
+                            message.Type =  taskType;
+                            message.LogMessage = data.MessageData.Rendered;
+                            _workspace.GetBuildMessageService().ReportBuildMessages(messages);
                         };
 
+                        result.BeginErrorReadLine();
+                        result.BeginOutputReadLine();
                         result.WaitForExit();
                         return await Task.FromResult(new BuildResult(result.ExitCode == 0));
                     }).JoinAsync();

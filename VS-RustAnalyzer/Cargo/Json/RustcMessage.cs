@@ -13,11 +13,12 @@ namespace VS_RustAnalyzer.Cargo.Json
     [Serializable]
     public class RustcMessage
     {
+        #region RustcMessage Properties
         [DataMember(Name = "message")]
-        string Message { get; set; }
+        public string Message { get; set; }
 
         [DataMember(Name = "code")]
-        DiagnosticCode CodeData;
+        public DiagnosticCode CodeData;
 
         /** The severity of the diagnostic.
            Values may be:
@@ -29,27 +30,34 @@ namespace VS_RustAnalyzer.Cargo.Json
            - "error: internal compiler error": Indicates a bug within the compiler.
         **/
         [DataMember(Name = "level")]
-        string Level { get; set; }
+        public string Level { get; set; }
 
         [DataMember(Name = "spans")]
-        List<Span> Spans { get; set; }
+        public List<Span> Spans { get; set; }
 
         [DataMember(Name = "rendered")]
-        string Rendered { get; set; }
+        public string Rendered { get; set; }
+
+        #endregion
+
+        #region RustcMessage InnerData
 
         [Serializable]
         public class DiagnosticCode
         {
+            #region DiagnosticCode Properties
             [DataMember(Name = "code")]
-            string Code { get; set; }
+            public string Code { get; set; }
 
             [DataMember(Name = "explanation")]
-            string Explanation { get; set; }
+            public string Explanation { get; set; }
+            #endregion
         }
 
         [Serializable]
         public class Span
         {
+            #region Span Properties
             /**The file where the span is located.
                Note that this path may not exist. For example, if the path
                points to the standard library, and the rust src is not
@@ -58,25 +66,25 @@ namespace VS_RustAnalyzer.Cargo.Json
                external crate.
             */
             [DataMember(Name = "file_name")]
-            string FileName { get; set; }
+            public string FileName { get; set; }
             /** The byte offset where the span starts (0-based, inclusive). */
             [DataMember(Name = "byte_start")]
-            int ByteStart { get; set; }
+            public int ByteStart { get; set; }
             /** The byte offset where the span ends (0-based, exclusive). */
             [DataMember(Name = "byte_end")]
-            int ByteEnd { get; set; }
+            public int ByteEnd { get; set; }
             /** The first line number of the span (1-based, inclusive). */
             [DataMember(Name = "line_start")]
-            int LineStart { get; set; }
+            public int LineStart { get; set; }
             /** The last line number of the span (1-based, inclusive). */
             [DataMember(Name = "line_end")]
-            int LineEnd { get; set; }
+            public int LineEnd { get; set; }
             /** The first character offset of the line_start (1-based, inclusive). */
             [DataMember(Name = "column_start")]
-            int ColumnStart { get; set; }
+            public int ColumnStart { get; set; }
             /** The last character offset of the line_end (1-based, exclusive). */
             [DataMember(Name = "column_end")]
-            int ColumnEnd { get; set; }
+            public int ColumnEnd { get; set; }
             /** Whether or not this is the "primary" span.
 
                This indicates that this span is the focal point of the
@@ -91,23 +99,23 @@ namespace VS_RustAnalyzer.Cargo.Json
                zero or more primary spans.
             */
             [DataMember(Name = "is_primary")]
-            bool IsPrimary { get; set; }
+            public bool IsPrimary { get; set; }
 
             [DataMember(Name = "text")]
-            List<TextHighlight> Text { get; set; }
+            public List<TextHighlight> Text { get; set; }
 
             /**An optional message to display at this span location.
                This is typically null for primary spans.
             */
             [DataMember(Name = "label")]
-            string Label { get; set; }
+            public string Label { get; set; }
 
             /**An optional string of a suggested replacement for this span to
                solve the issue. Tools may try to replace the contents of the
                span with this text.
             */
             [DataMember(Name ="suggested_replacement")]
-            string SuggestedReplacement { get; set; }
+            public string SuggestedReplacement { get; set; }
             /**An optional string that indicates the confidence of the
                "suggested_replacement". Tools may use this value to determine
                whether or not suggestions should be automatically applied.
@@ -126,39 +134,49 @@ namespace VS_RustAnalyzer.Cargo.Json
                - "Unspecified": The applicability of the suggestion is unknown.
             */
             [DataMember(Name = "suggestion_applicability")]
-            string SuggestedApplicability { get; set; }
+            public string SuggestedApplicability { get; set; }
+
+            #endregion
+
+            #region Span InnerData
 
             [Serializable]
             public class TextHighlight
             {
+                #region TextHighlight Properties
                 /** The entire line of the original source code. */
                 [DataMember(Name = "text")]
-                string NearbyText { get; set; }
+                public string NearbyText { get; set; }
                 /**The first character offset of the line of
                    where the span covers this line (1-based, inclusive). */
                 [DataMember(Name = "highlight_start")]
-                int HighlightStart { get; set; }
+                public int HighlightStart { get; set; }
                 /**The last character offset of the line of
                    where the span covers this line (1-based, exclusive). */
                 [DataMember(Name = "highlight_end")]
-                int HighlightEnd { get; set; }
+                public int HighlightEnd { get; set; }
+                #endregion
             }
 
             [Serializable]
             public class Expansion
             {
+                #region Expansion Properties
                 [DataMember(Name = "span")]
-                Span Span { get; set; }
+                public Span Span { get; set; }
                 /**Name of the macro, such as "foo!" or "#[derive(Eq)]". */
                 [DataMember(Name ="macro_decl_name")]
-                string MacroDeclarationName { get; set; }
+                public string MacroDeclarationName { get; set; }
 
                 /* Optional span where the relevant part of the macro is
                   defined. */
                 [DataMember(Name ="def_site_span")]
-                Span DefinitionSiteSpan { get; set; }
+                public Span DefinitionSiteSpan { get; set; }
+                #endregion
             }
+            #endregion
         }
+        #endregion
     }
 
     /**
@@ -166,7 +184,9 @@ namespace VS_RustAnalyzer.Cargo.Json
     [Serializable]
     public class RustcMessageWithChildren : RustcMessage
     {
+        #region RustcMessageWithChildrenProperties
         [DataMember(Name = "children")]
-        List<RustcMessage> Children { get; set; }
+        public List<RustcMessage> Children { get; set; }
+        #endregion
     }
 }

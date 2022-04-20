@@ -13,21 +13,25 @@ namespace VS_RustAnalyzer.Cargo.Json
     [Serializable]
     public class CompilerMessage
     {
-        #region CompilerMessage Fields
+        #region CompilerMessage Properties
+        /** compiler-message */
         [DataMember(Name = "reason")]
-        string Reason { get; set; }
+        public string Reason { get; set; }
 
+        /** The Package ID, a unique identifier for referring to the package.
+          ex. "package_id": "my-package 0.1.0 (path+file:///path/to/my-package)"
+        */
         [DataMember(Name = "package_id")]
-        string PackageId { get; set; }
+        public string PackageId { get; set; }
 
         [DataMember(Name = "manifest_path")]
-        string ManifestPath { get; set; }
+        public string ManifestPath { get; set; }
 
         [DataMember(Name = "target")]
-        Target TargetData { get; set; }
+        public Target TargetData { get; set; }
 
         [DataMember(Name ="message")]
-        RustcMessageWithChildren MessageData { get; set; }
+        public RustcMessageWithChildren MessageData { get; set; }
 
         #endregion
 
@@ -35,7 +39,7 @@ namespace VS_RustAnalyzer.Cargo.Json
         [Serializable]
         public class Target
         {
-            #region CompilerMessage.Target Fields
+            #region CompilerMessage.Target Properties
             /** Array of target kinds.
                  - lib targets list the `crate-type` values from the
                    manifest such as "lib", "rlib", "dylib",
@@ -47,7 +51,7 @@ namespace VS_RustAnalyzer.Cargo.Json
                  - build script is ["custom-build"]
             **/
             [DataMember(Name = "kind")]
-            List<string> Kinds { get; set; }
+            public List<string> Kinds { get; set; }
 
             /** Array of crate types.
                - lib and example libraries list the `crate-type` values
@@ -56,22 +60,22 @@ namespace VS_RustAnalyzer.Cargo.Json
                - all other target kinds are ["bin"]
             **/
             [DataMember(Name = "crate_types")]
-            List<string> CrateTypes { get; set; }
+            public List<string> CrateTypes { get; set; }
 
             [DataMember(Name = "name")]
-            string Name { get; set; }
+            public string Name { get; set; }
 
             [DataMember(Name = "src_path")]
-            string SourcePath { get; set; }
+            public string SourcePath { get; set; }
 
             [DataMember(Name = "edition")]
-            string Edition { get; set; }
+            public string Edition { get; set; }
 
             [DataMember(Name = "required-features")]
-            List<string> RequiredFeatures { get; set; }
+            public List<string> RequiredFeatures { get; set; }
 
             [DataMember(Name = "doctest")]
-            string Doctest { get; set; }
+            public string Doctest { get; set; }
             #endregion
         }
         #endregion
