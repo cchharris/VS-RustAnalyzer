@@ -131,6 +131,17 @@ namespace VS_RustAnalyzer
                             message.ProjectFile = data.ManifestPath;
                             message.Type =  taskType;
                             message.LogMessage = data.MessageData.Rendered;
+                            message.TaskText = data.MessageData.Rendered;
+                            message.Code = data.MessageData.CodeData?.Code;
+                            if(data.MessageData.Spans.Count > 0)
+                            {
+                                var span = data.MessageData.Spans.First();
+                                message.File = span.FileName;
+                                message.LineNumber = span.LineStart;
+                                message.ColumnNumber = span.ColumnStart;
+                            }
+                            messages.Add(message);
+                            //await _workspace.JTF.SwitchToMainThreadAsync();
                             _workspace.GetBuildMessageService().ReportBuildMessages(messages);
                         };
 
