@@ -12,7 +12,7 @@ namespace VS_RustAnalyzer.Cargo
     {
         public object CreateService(IWorkspace workspaceContext)
         {
-            throw new NotImplementedException();
+            return new CargoReaderService(workspaceContext);
         }
     }
 

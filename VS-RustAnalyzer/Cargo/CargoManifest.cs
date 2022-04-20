@@ -29,7 +29,7 @@ namespace VS_RustAnalyzer.Cargo
 
         public void ClearCache() { _cachedDoc = null; }
 
-        public string PackageName => _cachedDoc.Package.Name;
+        public string PackageName => Toml.Package.Name;
 
         public List<ICargoTarget> Targets => throw new NotImplementedException();
     }

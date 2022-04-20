@@ -13,6 +13,7 @@ namespace VS_RustAnalyzer.Build
 {
     [ExportFileContextProvider(ProviderType,
         new string[] {
+            PackageIds.CargoFileContextType,
             BuildContextTypes.BuildContextType
         })]
     internal class CargoContextProviderFactory : IWorkspaceProviderFactory<IFileContextProvider>

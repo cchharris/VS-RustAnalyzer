@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Workspace;
+using Microsoft.VisualStudio.Workspace.Build;
 using Microsoft.VisualStudio.Workspace.Debug;
 using Microsoft.VisualStudio.Workspace.Indexing;
 using System;
@@ -56,7 +57,6 @@ namespace VS_RustAnalyzer.Build
                     {
                         [LaunchConfigurationConstants.NameKey] = cargoManifest.PackageName,
                         [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
-                        [LaunchConfigurationConstants.ArgsKey] = "echo foo",
                     };
 
                     ret.Add(new FileDataValue(
