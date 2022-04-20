@@ -65,9 +65,9 @@
     </Compile>
     <Compile Include="PackageIds.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RustContentDefinition.cs" />
-    <Compile Include="RustLanguageClient.cs" />
-    <Compile Include="RustLanguageClientMiddleLayer.cs" />
+    <Compile Include="LanguageServer\RustContentDefinition.cs" />
+    <Compile Include="LanguageServer\RustLanguageClient.cs" />
+    <Compile Include="LanguageServer\RustLanguageClientMiddleLayer.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VS_RustAnalyzerPackage.cs" />
   </ItemGroup>
