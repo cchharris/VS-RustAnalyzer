@@ -68,11 +68,20 @@
     <Compile Include="LanguageServer\RustContentDefinition.cs" />
     <Compile Include="LanguageServer\RustLanguageClient.cs" />
     <Compile Include="LanguageServer\RustLanguageClientMiddleLayer.cs" />
+    <Compile Include="GeneralSettings.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VS_RustAnalyzerPackage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\rust-logo-256x256.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Grammars\toml.tmLanguage">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Icons\file_type_cargo.png" />
@@ -141,7 +150,9 @@
     <Content Include=".pkgdef">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Assets\Licenses.txt" />
+    <Content Include="Assets\Licenses.txt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Assets\rust-logo-512x512.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -153,7 +164,9 @@
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Options\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

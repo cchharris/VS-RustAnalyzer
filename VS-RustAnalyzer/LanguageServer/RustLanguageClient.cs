@@ -40,17 +40,23 @@ namespace VS_RustAnalyzer
 
         public object CustomMessageTarget {get;}
 
-        RustLanguageClient()
+        private GeneralSettings _generalSettings;
+
+        [ImportingConstructor]
+        RustLanguageClient([Import] GeneralSettings generalSettings)
         {
             CustomMessageTarget = new MessageHandler();
+            _generalSettings = generalSettings;
         }
 
         public async Task<Connection> ActivateAsync(CancellationToken token)
         {
             // await Task.Yield(); // Default Boilerplate
 
+            _generalSettings.Load();
+
             ProcessStartInfo info = new ProcessStartInfo();
-            info.FileName = ExecutablePath;
+            info.FileName = string.IsNullOrEmpty(_generalSettings.RustAnalyzerPath) ? ExecutablePath : _generalSettings.RustAnalyzerPath;
             info.RedirectStandardInput = true;
             info.RedirectStandardOutput = true;
             info.UseShellExecute = false;
