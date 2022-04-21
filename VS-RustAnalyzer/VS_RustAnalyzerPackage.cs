@@ -27,6 +27,7 @@ namespace VS_RustAnalyzer
     [Guid(VS_RustAnalyzerPackage.PackageGuidString)]
     [ProvideOptionPage(typeof(GeneralOptions),
         "Rust Analyzer", "General", 0, 0, true)]
+    [ProvideBindingPath()]
     public sealed class VS_RustAnalyzerPackage : AsyncPackage
     {
         /// <summary>
