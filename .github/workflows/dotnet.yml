@@ -34,9 +34,13 @@ jobs:
     - name: Execute unit tests
       run: dotnet test
 
+    # Restore the application
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
+
     # Build the application
     - name: Build the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
+      run: msbuild $env:Solution_Name /p:Configuration=Release
 
     # Upload the VSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
     - name: Upload build artifacts
