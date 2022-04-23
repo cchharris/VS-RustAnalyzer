@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using VS_RustAnalyzer.Cargo;
+using static VS_RustAnalyzer.Builds;
 
 namespace VS_RustAnalyzer.Build
 {
@@ -56,15 +57,19 @@ namespace VS_RustAnalyzer.Build
                     //TODO Limit only to bin
                     //TODO Get output location
                     // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
-                    var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName);
+                    var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName) + ".exe";
 
-                    ret.Add(new FileDataValue(new Guid(Builds.BuildType), "Build", null, context: Builds.BuildContextInstance.BuildConfiguration));
+                    foreach (var profile in cargoManifest.Profiles)
+                    {
+                        ret.Add(new FileDataValue(BuildConfigurationContext.ContextTypeGuid, BuildConfigurationContext.DataValueName, value:null, target:null, context:profile));
+                    }
                     IPropertySettings launchSettings = new PropertySettings
                     {
-                        ["StartupProject"] = filePath,
+                        //["StartupProject"] = filePath,
                         [LaunchConfigurationConstants.NameKey] = cargoManifest.PackageName,
                         [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
-                        [LaunchConfigurationConstants.TargetKey] = $"{output}.exe",
+                        [LaunchConfigurationConstants.ProjectKey] = output,
+                        [LaunchConfigurationConstants.ProjectTargetKey] = $"",
                     };
 
                     ret.Add(new FileDataValue(

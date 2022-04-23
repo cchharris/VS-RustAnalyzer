@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using VS_RustAnalyzer.Cargo;
+using static VS_RustAnalyzer.Builds;
 
 namespace VS_RustAnalyzer.Build
 {
@@ -16,6 +18,7 @@ namespace VS_RustAnalyzer.Build
             PackageIds.CargoFileContextType,
             BuildContextTypes.BuildContextType,
             BuildContextTypes.CleanContextType,
+            BuildConfigurationContext.ContextType,
         })]
     internal class CargoContextProviderFactory : IWorkspaceProviderFactory<IFileContextProvider>
     {
@@ -30,9 +33,11 @@ namespace VS_RustAnalyzer.Build
         internal class CargoContextProvider : IFileContextProvider
         {
             private readonly IWorkspace _workspace;
+            private readonly ICargoReaderService _cargoReaderService;
             internal CargoContextProvider(IWorkspace workspace)
             {
                 this._workspace = workspace;
+                _cargoReaderService = _workspace.GetService<ICargoReaderService>();
             }
 
             public async Task<IReadOnlyCollection<FileContext>> GetContextsForFileAsync(string filePath, CancellationToken cancellationToken)
@@ -40,16 +45,21 @@ namespace VS_RustAnalyzer.Build
                 var fileContexts = new List<FileContext>();
                 if (Util.IsCargoFile(filePath))
                 {
+                    var cargoManifest = _cargoReaderService.CargoManifestForFile(filePath);
                     /**
                      * These are the menu items across the top of Visual Studio
                      */
-                    var buildLaunchCommand = new LaunchCommand("cargo", "build", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
-                    var buildActionContext = new BuildActionContext(new LaunchCommand[] { buildLaunchCommand }, "Cargo build configuration");
-                    fileContexts.Add(new FileContext(new Guid(ProviderType),
-                        BuildActionContext.ContextTypeGuid, buildActionContext, new string[] {filePath}));
+                    foreach (var profile in cargoManifest.Profiles)
+                    {
+                        var buildLaunchCommand = new LaunchCommand("cargo", $"build --profile {profile}", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
+                        var buildActionContext = new BuildActionContext(new LaunchCommand[] { buildLaunchCommand }, profile);
+                        fileContexts.Add(new FileContext(ProviderTypeGuid,
+                            BuildActionContext.ContextTypeGuid, buildActionContext, new string[] { filePath }));
+                        //fileContexts.Add(new FileContext(ProviderTypeGuid, BuildConfigurationContext.ContextTypeGuid, new CargoBuildContext(profile), new string[] { filePath }));
+                    }
                     var cleanLaunchCommand = new LaunchCommand("cargo", "clean", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
                     var cleanActionContext = new BuildActionContext(new LaunchCommand[] { cleanLaunchCommand }, "Cargo clean configuration");
-                    fileContexts.Add(new FileContext(new Guid(ProviderType),
+                    fileContexts.Add(new FileContext(ProviderTypeGuid,
                         BuildActionContext.CleanContextTypeGuid, cleanActionContext, new string[] {filePath}));
                 }
 

@@ -32,5 +32,8 @@ namespace VS_RustAnalyzer.Cargo
         public string PackageName => Toml.Package.Name;
 
         public List<ICargoTarget> Targets => throw new NotImplementedException();
+
+        // TODO
+        public IEnumerable<string> Profiles => new [] {"dev", "release", "test", "bench"};
     }
 }
