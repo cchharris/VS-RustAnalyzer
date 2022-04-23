@@ -41,7 +41,7 @@ namespace VS_RustAnalyzer.Build
             public async Task<T> ScanContentAsync<T>(string filePath, CancellationToken cancellationToken) where T : class
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 if (typeof(T) != FileScannerTypeConstants.FileDataValuesType)
                 {
                     throw new NotImplementedException();
@@ -57,25 +57,29 @@ namespace VS_RustAnalyzer.Build
                     //TODO Limit only to bin
                     //TODO Get output location
                     // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
-                    var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName) + ".exe";
+                    var output = Path.Combine(Path.GetDirectoryName(_workspace.MakeRelative(filePath)), "target", "debug", cargoManifest.PackageName) + ".exe";
 
                     foreach (var profile in cargoManifest.Profiles)
                     {
-                        ret.Add(new FileDataValue(BuildConfigurationContext.ContextTypeGuid, BuildConfigurationContext.DataValueName, value:null, target:null, context:profile));
+                        ret.Add(new FileDataValue(BuildConfigurationContext.ContextTypeGuid, BuildConfigurationContext.DataValueName, value: null, target: null, context: profile));
                     }
-                    IPropertySettings launchSettings = new PropertySettings
-                    {
-                        //["StartupProject"] = filePath,
-                        [LaunchConfigurationConstants.NameKey] = cargoManifest.PackageName,
-                        [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
-                        [LaunchConfigurationConstants.ProjectKey] = output,
-                        [LaunchConfigurationConstants.ProjectTargetKey] = $"",
-                    };
 
-                    ret.Add(new FileDataValue(
-                        DebugLaunchActionContext.ContextTypeGuid,
-                        DebugLaunchActionContext.IsDefaultStartupProjectEntry,
-                        launchSettings));
+                    foreach (var binTarget in cargoManifest.BinTargets)
+                    {
+                        IPropertySettings launchSettings = new PropertySettings
+                        {
+                            //["StartupProject"] = filePath,
+                            [LaunchConfigurationConstants.NameKey] = $"{binTarget}.exe [{cargoManifest.PackageName}]",
+                            [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
+                            [LaunchConfigurationConstants.ProjectKey] = output,
+                            [LaunchConfigurationConstants.ProjectTargetKey] = $"",
+                        };
+
+                        ret.Add(new FileDataValue(
+                            DebugLaunchActionContext.ContextTypeGuid,
+                            DebugLaunchActionContext.IsDefaultStartupProjectEntry,
+                            launchSettings));
+                    }
                 }
 
                 return await Task.FromResult((T)(IReadOnlyCollection<FileDataValue>)ret);

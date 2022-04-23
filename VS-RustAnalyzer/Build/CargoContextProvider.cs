@@ -51,16 +51,22 @@ namespace VS_RustAnalyzer.Build
                      */
                     foreach (var profile in cargoManifest.Profiles)
                     {
-                        var buildLaunchCommand = new LaunchCommand("cargo", $"build --profile {profile}", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
+                        var buildLaunchCommand = new LaunchCommand("cargo", $"build --profile {profile}",
+                            LaunchCommandOption.None,
+                            workingDirectory: Path.GetDirectoryName(filePath),
+                            projectFullPath:filePath);
                         var buildActionContext = new BuildActionContext(new LaunchCommand[] { buildLaunchCommand }, profile);
                         fileContexts.Add(new FileContext(ProviderTypeGuid,
                             BuildActionContext.ContextTypeGuid, buildActionContext, new string[] { filePath }));
                         //fileContexts.Add(new FileContext(ProviderTypeGuid, BuildConfigurationContext.ContextTypeGuid, new CargoBuildContext(profile), new string[] { filePath }));
                     }
-                    var cleanLaunchCommand = new LaunchCommand("cargo", "clean", LaunchCommandOption.None, workingDirectory: Path.GetDirectoryName(filePath));
+                    var cleanLaunchCommand = new LaunchCommand("cargo", "clean",
+                        LaunchCommandOption.None,
+                        workingDirectory: Path.GetDirectoryName(filePath),
+                        projectFullPath:filePath);
                     var cleanActionContext = new BuildActionContext(new LaunchCommand[] { cleanLaunchCommand }, "Cargo clean configuration");
                     fileContexts.Add(new FileContext(ProviderTypeGuid,
-                        BuildActionContext.CleanContextTypeGuid, cleanActionContext, new string[] {filePath}));
+                        BuildActionContext.CleanContextTypeGuid, cleanActionContext, new string[] { filePath }));
                 }
 
                 return await Task.FromResult(fileContexts);

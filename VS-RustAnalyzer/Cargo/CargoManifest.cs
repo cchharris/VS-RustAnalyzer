@@ -14,6 +14,8 @@ namespace VS_RustAnalyzer.Cargo
         private string _path;
         private CargoToml _cachedDoc;
 
+        public static string[] DefaultProfiles = new [] {"dev", "release", "test", "bench"};
+
         private CargoToml Toml { get {
                 if (_cachedDoc == null)
                 {
@@ -34,6 +36,13 @@ namespace VS_RustAnalyzer.Cargo
         public List<ICargoTarget> Targets => throw new NotImplementedException();
 
         // TODO
-        public IEnumerable<string> Profiles => new [] {"dev", "release", "test", "bench"};
+        public IEnumerable<string> Profiles => DefaultProfiles;
+
+        public IEnumerable<string> BinTargets => FindBinTargets();
+
+        private IEnumerable<string> FindBinTargets()
+        {
+            yield return PackageName;
+        }
     }
 }
