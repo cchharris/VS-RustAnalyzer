@@ -14,6 +14,13 @@ namespace VS_RustAnalyzer.Cargo
         private string _path;
         private CargoToml _cachedDoc;
 
+        public const string ProfileDev = "dev";
+        public const string ProfileRelease = "release";
+        public const string ProfileTest = "test";
+        public const string ProfileBench = "bench";
+
+        public static string[] DefaultProfiles = new [] { ProfileDev, ProfileRelease, ProfileTest, ProfileBench};
+
         private CargoToml Toml { get {
                 if (_cachedDoc == null)
                 {
@@ -32,5 +39,29 @@ namespace VS_RustAnalyzer.Cargo
         public string PackageName => Toml.Package.Name;
 
         public List<ICargoTarget> Targets => throw new NotImplementedException();
+
+        // TODO
+        public IEnumerable<string> Profiles => DefaultProfiles;
+
+        public IEnumerable<string> BinTargetPaths(string profile)
+        {
+            yield return $"target\\{MapProfileToTargetFolderName(profile)}\\{PackageName}.exe";
+        }
+
+        public string MapProfileToTargetFolderName(string profile)
+        {
+            switch(profile)
+            {
+                case ProfileDev:
+                case ProfileTest:
+                    return "debug";
+                case ProfileRelease:
+                case ProfileBench:
+                    return "release";
+                default: // Custom profile
+                    return profile;
+                   
+            }
+        }
     }
 }

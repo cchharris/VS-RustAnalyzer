@@ -1,10 +1,10 @@
-name: .NET
+name: .NET Release
 
 on:
   push:
-    branches: [ main, release ]
-  pull_request:
-    branches: [ main, release ]
+    tags:
+      - v*
+    
 
 jobs:
 
@@ -41,3 +41,10 @@ jobs:
     # Build the application
     - name: Build the application
       run: msbuild $env:Solution_Name /p:Configuration=Release
+
+    # Upload the VSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: VSIX Package
+        path: VS-RustAnalyzer\bin\Release\VS-RustAnalyzer.vsix
