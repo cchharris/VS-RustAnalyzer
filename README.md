@@ -1,6 +1,11 @@
 # VS-RustAnalyzer
 
+#### [Github](https://github.com/cchharris/VS-RustAnalyzer)
 [![.NET](https://github.com/cchharris/VS-RustAnalyzer/actions/workflows/dotnet.yml/badge.svg)](https://github.com/cchharris/VS-RustAnalyzer/actions/workflows/dotnet.yml)  ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/cchharris/VS-RustAnalyzer?include_prereleases)
+
+#### [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=cchharris.vsrustanalyzer&ssr=false#overview)
+
+![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/cchharris.vsrustanalyzer)  ![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/cchharris.vsrustanalyzer)
 
 Source Repository for [VS_RustAnalyzer](https://marketplace.visualstudio.com/items?itemName=cchharris.vsrustanalyzer) Visual Studio Package.
 
