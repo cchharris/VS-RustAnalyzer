@@ -11,5 +11,9 @@ namespace VS_RustAnalyzer.Cargo
         string PackageName { get; }
 
         List<ICargoTarget> Targets { get; }
+
+        IEnumerable<string> Profiles { get; }
+
+        IEnumerable<string> BinTargetPaths(string profile);
     }
 }
