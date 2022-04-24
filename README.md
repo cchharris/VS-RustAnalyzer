@@ -19,10 +19,17 @@ As Visual Studio is still implementing and improving language server features, t
 ### Visual Studio Specific
 _WORK IN PROGRESS_
 
-#### In Progress
-[_] Build
+#### Implemented
 
-[_] Startup Options
+[x] Toml language grammar
+
+[x] File icons (placeholder)
+
+[x] Build
+
+#### In Progress
+
+[x] Startup Options - Basic bin support
 
 #### Future
 

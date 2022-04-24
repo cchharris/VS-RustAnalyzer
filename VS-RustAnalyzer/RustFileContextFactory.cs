@@ -54,7 +54,7 @@ namespace VS_RustAnalyzer
                         filePath + '\n', Array.Empty<string>()));
                 }
 
-                return await Task.FromResult(fileContexts.ToArray());
+                return await Task.FromResult(fileContexts);
             }
         }
     }
