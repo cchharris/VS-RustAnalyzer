@@ -14,6 +14,6 @@ namespace VS_RustAnalyzer.Cargo
 
         IEnumerable<string> Profiles { get; }
 
-        IEnumerable<string> BinTargets { get; }
+        IEnumerable<string> BinTargetPaths(string profile);
     }
 }

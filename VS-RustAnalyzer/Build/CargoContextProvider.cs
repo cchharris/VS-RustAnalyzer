@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Workspace;
 using Microsoft.VisualStudio.Workspace.Build;
+using Microsoft.VisualStudio.Workspace.Debug;
 using Microsoft.VisualStudio.Workspace.Extensions.Build;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace VS_RustAnalyzer.Build
             BuildContextTypes.BuildContextType,
             BuildContextTypes.CleanContextType,
             BuildConfigurationContext.ContextType,
+            DebugLaunchActionContext.ContextType,
         })]
     internal class CargoContextProviderFactory : IWorkspaceProviderFactory<IFileContextProvider>
     {
@@ -58,7 +60,6 @@ namespace VS_RustAnalyzer.Build
                         var buildActionContext = new BuildActionContext(new LaunchCommand[] { buildLaunchCommand }, profile);
                         fileContexts.Add(new FileContext(ProviderTypeGuid,
                             BuildActionContext.ContextTypeGuid, buildActionContext, new string[] { filePath }));
-                        //fileContexts.Add(new FileContext(ProviderTypeGuid, BuildConfigurationContext.ContextTypeGuid, new CargoBuildContext(profile), new string[] { filePath }));
                     }
                     var cleanLaunchCommand = new LaunchCommand("cargo", "clean",
                         LaunchCommandOption.None,

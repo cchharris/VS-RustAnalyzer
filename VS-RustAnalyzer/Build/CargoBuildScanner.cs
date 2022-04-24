@@ -19,7 +19,7 @@ namespace VS_RustAnalyzer.Build
         new string[] {
             Util.CargoFileExtension
         },
-        new Type[] { typeof(IReadOnlyCollection<FileDataValue>) })]
+        new Type[] { typeof(IReadOnlyCollection<FileDataValue>), typeof(IReadOnlyCollection<FileReferenceInfo>) })]
     internal class CargoBuildScanner : IWorkspaceProviderFactory<IFileScanner>
     {
         public const string ProviderType = "F5628EAD-8A24-4683-B597-D8314B971ED6";
@@ -42,47 +42,71 @@ namespace VS_RustAnalyzer.Build
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (typeof(T) != FileScannerTypeConstants.FileDataValuesType)
+                if (typeof(T) == FileScannerTypeConstants.FileDataValuesType)
+                {
+                    var ret = new List<FileDataValue>();
+
+                    if (Util.IsCargoFile(filePath))
+                    {
+                        var readerService = _workspace.GetService<ICargoReaderService>();
+                        var cargoManifest = readerService.CargoManifestForFile(filePath);
+
+                        //TODO Limit only to bin
+                        //TODO Get output location
+                        // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
+                        var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName) + ".exe";
+
+                        foreach (var profile in cargoManifest.Profiles)
+                        {
+                            ret.Add(new FileDataValue(BuildConfigurationContext.ContextTypeGuid,
+                                BuildConfigurationContext.DataValueName,
+                                value: null,
+                                target: null,
+                                context: profile));
+                            foreach (var binTarget in cargoManifest.BinTargetPaths(profile))
+                            {
+                                string name = $"{Path.GetFileName(binTarget)} [{cargoManifest.PackageName}]";
+                                IPropertySettings launchSettings = new PropertySettings
+                                {
+                                    [LaunchConfigurationConstants.NameKey] = name,
+                                    [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
+                                    [LaunchConfigurationConstants.ProgramKey] = binTarget,
+                                };
+
+                                ret.Add(new FileDataValue(
+                                    DebugLaunchActionContext.ContextTypeGuid,
+                                    DebugLaunchActionContext.IsDefaultStartupProjectEntry,
+                                    launchSettings));
+                            }
+                        }
+                    }
+
+                    return await Task.FromResult((T)(IReadOnlyCollection<FileDataValue>)ret);
+                }
+                else if  (typeof(T) == FileScannerTypeConstants.FileReferenceInfoType)
+                {
+                    var ret = new List<FileReferenceInfo>();
+
+                    if (Util.IsCargoFile(filePath))
+                    {
+                        var readerService = _workspace.GetService<ICargoReaderService>();
+                        var cargoManifest = readerService.CargoManifestForFile(filePath);
+
+                        foreach (var profile in cargoManifest.Profiles)
+                        {
+                            foreach (var target in cargoManifest.BinTargetPaths(profile))
+                            {
+                                ret.Add(new FileReferenceInfo(target, null, profile, (int)FileReferenceInfoType.Output));
+                            }
+                        }
+                    }
+
+                    return await Task.FromResult((T)(IReadOnlyCollection<FileReferenceInfo>)ret);
+                }
+                else
                 {
                     throw new NotImplementedException();
                 }
-
-                var ret = new List<FileDataValue>();
-
-                if (Util.IsCargoFile(filePath))
-                {
-                    var readerService = _workspace.GetService<ICargoReaderService>();
-                    var cargoManifest = readerService.CargoManifestForFile(filePath);
-
-                    //TODO Limit only to bin
-                    //TODO Get output location
-                    // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
-                    var output = Path.Combine(Path.GetDirectoryName(_workspace.MakeRelative(filePath)), "target", "debug", cargoManifest.PackageName) + ".exe";
-
-                    foreach (var profile in cargoManifest.Profiles)
-                    {
-                        ret.Add(new FileDataValue(BuildConfigurationContext.ContextTypeGuid, BuildConfigurationContext.DataValueName, value: null, target: null, context: profile));
-                    }
-
-                    foreach (var binTarget in cargoManifest.BinTargets)
-                    {
-                        IPropertySettings launchSettings = new PropertySettings
-                        {
-                            //["StartupProject"] = filePath,
-                            [LaunchConfigurationConstants.NameKey] = $"{binTarget}.exe [{cargoManifest.PackageName}]",
-                            [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
-                            [LaunchConfigurationConstants.ProjectKey] = output,
-                            [LaunchConfigurationConstants.ProjectTargetKey] = $"",
-                        };
-
-                        ret.Add(new FileDataValue(
-                            DebugLaunchActionContext.ContextTypeGuid,
-                            DebugLaunchActionContext.IsDefaultStartupProjectEntry,
-                            launchSettings));
-                    }
-                }
-
-                return await Task.FromResult((T)(IReadOnlyCollection<FileDataValue>)ret);
             }
         }
     }
