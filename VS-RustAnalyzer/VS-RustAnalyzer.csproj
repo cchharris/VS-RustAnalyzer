@@ -49,6 +49,7 @@
     <Compile Include="Build\CargoBuildScanner.cs" />
     <Compile Include="Build\CargoContextProvider.cs" />
     <Compile Include="Build\CargoFileContextActionProviderFactory.cs" />
+    <Compile Include="RustWorkspaceNodeExtender.cs" />
     <Compile Include="Cargo\CargoManifest.cs" />
     <Compile Include="Cargo\CargoReaderService.cs" />
     <Compile Include="Cargo\ICargoManifest.cs" />
@@ -138,6 +139,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Workspace.Extensions" Version="17.1.11-preview-0002" PrivateAssets="all" />
     <PackageReference Include="Microsoft.VisualStudio.Workspace.Extensions.VS" Version="17.1.11-preview-0002" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Workspace.VSIntegration">
+      <Version>16.3.43</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.1.4057">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
