@@ -69,8 +69,14 @@ namespace VS_RustAnalyzer
                 public CargoTargetNode(WorkspaceVisualNodeBase parent, string path) : base(parent)
                 {
                     this._filePath = path;
+                    this.NodeMoniker = parent.NodeMoniker == null ? null : parent.NodeMoniker + WorkspaceVisualNodeBase.MonikerSeparator + path;
                 }
 
+                protected override void OnInitialized()
+                {
+                    base.OnInitialized();
+                    UINode.Text = _filePath;
+                }
             }
         }
     }
