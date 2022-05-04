@@ -54,8 +54,6 @@ namespace VS_RustAnalyzer.Build
                         //TODO Limit only to bin
                         //TODO Get output location
                         // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
-                        var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName) + ".exe";
-
                         foreach (var profile in cargoManifest.Profiles)
                         {
                             ret.Add(new FileDataValue(BuildConfigurationContext.ContextTypeGuid,

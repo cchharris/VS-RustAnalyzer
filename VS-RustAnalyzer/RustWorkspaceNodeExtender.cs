@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Workspace;
 using Microsoft.VisualStudio.Workspace.VSIntegration.UI;
 using VS_RustAnalyzer.Cargo;
@@ -76,6 +77,13 @@ namespace VS_RustAnalyzer
                 {
                     base.OnInitialized();
                     UINode.Text = _filePath;
+                    var executable = KnownMonikers.Console;
+                    SetIcon(executable.Guid, executable.Id);
+                    /*
+                    SetExpandedIcon(executable.Guid, executable.Id);
+                    SetOverlayIcon(executable.Guid, executable.Id);
+                    SetStateIcon(executable.Guid, executable.Id);
+                    */
                 }
             }
         }
