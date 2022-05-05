@@ -68,9 +68,11 @@ namespace VS_RustAnalyzer.Cargo
             }
         }
 
-        private static string TargetPathForBin(string profile, string bin)
+        private static string TargetPathForBin(string profile, string bin, string extra = "")
         {
-            return $"target\\{MapProfileToTargetFolderName(profile)}\\{bin}.exe";
+            if (string.IsNullOrEmpty(extra))
+                return $"target\\{MapProfileToTargetFolderName(profile)}\\{bin}.exe";
+            return $"target\\{MapProfileToTargetFolderName(profile)}\\{extra}\\{bin}.exe";
         }
 
         public IEnumerable<ICargoTarget> EnumerateFileSystemInferredTargets()
@@ -85,15 +87,24 @@ namespace VS_RustAnalyzer.Cargo
 
             if (Toml.Package.AutoExamples)
             {
-
+                foreach(var target in EnumerateFileSystemInferredExamples())
+                {
+                    yield return target;
+                }
             }
             if (Toml.Package.AutoTests)
             {
-
+                foreach(var target in EnumerateFileSystemInferredTests())
+                {
+                    yield return target;
+                }
             }
             if (Toml.Package.AutoBenches)
             {
-
+                foreach(var target in EnumerateFileSystemInferredBenches())
+                {
+                    yield return target;
+                }
             }
         }
 
@@ -116,28 +127,70 @@ namespace VS_RustAnalyzer.Cargo
             var srcPath = Path.Combine(directoryContainingCargo, "src");
             var defaultMain = Path.Combine(srcPath, "main.rs");
 
-            CargoTarget CargoTargetFor(string name, string path) => new CargoTarget($"{name}.exe", path, _path, (profile) => TargetPathForBin(profile, name), TargetType.Binary, CrateType.Binary);
-
             if(File.Exists(defaultMain))
             {
-                yield return CargoTargetFor(PackageName, defaultMain);
+                yield return CargoTargetFor(PackageName, defaultMain, string.Empty, TargetType.Binary, CrateType.Binary);
             }
             var binPath = Path.Combine(srcPath, "bin");
-            if (Directory.Exists(binPath))
+            foreach(var target in EnumerateFileSystemForInferredTargets(binPath, string.Empty, TargetType.Binary, CrateType.Binary))
             {
-                var files = Directory.EnumerateFiles(binPath, "*.rs");
+                yield return target;
+            }
+        }
+
+        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredBenches()
+        {
+            var directoryContainingCargo = Path.GetDirectoryName(_path);
+            var benchesPath = Path.Combine(directoryContainingCargo, "benches");
+            foreach (var target in EnumerateFileSystemForInferredTargets(benchesPath, string.Empty, TargetType.Bench, CrateType.Bench))
+            {
+                yield return target;
+            }
+        }
+
+        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredExamples()
+        {
+            var directoryContainingCargo = Path.GetDirectoryName(_path);
+            var examplesPath = Path.Combine(directoryContainingCargo, "examples");
+            foreach (var target in EnumerateFileSystemForInferredTargets(examplesPath, "examples", TargetType.Example, CrateType.Binary))
+            {
+                yield return target;
+            }
+        }
+
+        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredTests()
+        {
+            var directoryContainingCargo = Path.GetDirectoryName(_path);
+            var testsPath = Path.Combine(directoryContainingCargo, "tests");
+            foreach (var target in EnumerateFileSystemForInferredTargets(testsPath, string.Empty, TargetType.Test, CrateType.Test))
+            {
+                yield return target;
+            }
+        }
+
+
+        private IEnumerable<ICargoTarget> EnumerateFileSystemForInferredTargets(string dir, string extra, TargetType type, CrateType crate)
+        {
+            if (Directory.Exists(dir))
+            {
+                var files = Directory.EnumerateFiles(dir, "*.rs");
                 foreach (var file in files)
                 {
                     var fileName = Path.GetFileNameWithoutExtension(file);
-                    yield return CargoTargetFor(fileName, file);
+                    yield return CargoTargetFor(fileName, file, extra, type, crate);
                 }
 
-                foreach (var dir in EnumerateDirectoriesContainingMain(binPath))
+                foreach (var d in EnumerateDirectoriesContainingMain(dir))
                 {
-                    var exeName = new DirectoryInfo(dir).Name;
-                    yield return CargoTargetFor(exeName, Path.Combine(dir, "main.rs"));
+                    var exeName = new DirectoryInfo(d).Name;
+                    yield return CargoTargetFor(exeName, Path.Combine(d, "main.rs"), extra, type, crate);
                 }
             }
+        }
+
+        private CargoTarget CargoTargetFor(string name, string path, string extra, TargetType type, CrateType crate)
+        {
+            return new CargoTarget($"{name}.exe", path, _path, (profile) => TargetPathForBin(profile, name, extra), type, crate);
         }
     }
 }

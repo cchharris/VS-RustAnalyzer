@@ -17,7 +17,11 @@ namespace VS_RustAnalyzer.Cargo
 
     public enum CrateType
     {
+        // Provided for ease of use - don't actually matter here.
         Binary, // bin
+        Bench, // bench
+        Test, // test
+        // Below are where these matter - Libraries and Examples only
         Library, // lib
         RustLibrary, // rlib
         DynamicLibrary, // dylib
