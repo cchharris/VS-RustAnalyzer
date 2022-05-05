@@ -59,6 +59,19 @@ namespace VS_RustAnalyzer
      *  | |-Cargo.toml
      *  | |-Config.toml
      *  | |-Cargo.lock          # If not a workspace
+     *  | |-Crates
+     *  | | |-Lib
+     *  | | |-PackageBin
+     *  | | |-InferredBin
+     *  | | |-ExplicitBin
+     *  | | |-Unit Tests
+     *  | | |-Integration Tests
+     *  | | |-Explicit Tests
+     *  | | |-Inferred Examples
+     *  | | |-Explicit Examples
+     *  | | |-Unit Bench
+     *  | | |-Inferred Bench
+     *  | | |-Explicit Bench
      *  | |-Dependencies
      *  | | |-Rust Toolchain
      *  | | | |-Version, nightly, etc.
