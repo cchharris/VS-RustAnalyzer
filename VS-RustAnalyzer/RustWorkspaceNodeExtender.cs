@@ -20,7 +20,7 @@ namespace VS_RustAnalyzer
         public IChildrenSource ProvideChildren(WorkspaceVisualNodeBase parentNode)
         {
             if(parentNode is IFileNode && Util.IsCargoFile(Path.GetFileName((parentNode as IFileNode).FullPath)))
-                return new CargoChildrenSource(parentNode);
+                return new CargoChildrenSource(this, parentNode);
             return null;
         }
 
@@ -31,18 +31,20 @@ namespace VS_RustAnalyzer
 
         public class CargoChildrenSource : IChildrenSource
         {
+            private INodeExtender _source;
             private WorkspaceVisualNodeBase _parentNode;
             private IWorkspace _workspace;
             private ICargoReaderService _cargoReaderService;
 
-            public CargoChildrenSource(WorkspaceVisualNodeBase parentNode)
+            public CargoChildrenSource(INodeExtender extender, WorkspaceVisualNodeBase parentNode)
             {
+                this._source = extender;
                 this._parentNode = parentNode;
                 this._workspace = parentNode.Workspace;
                 this._cargoReaderService = _workspace.GetService<ICargoReaderService>();
             }
 
-            public INodeExtender Extender => null;
+            public INodeExtender Extender => _source;
 
             public int Order => 1;
 
@@ -70,7 +72,7 @@ namespace VS_RustAnalyzer
                 public CargoTargetNode(WorkspaceVisualNodeBase parent, string path) : base(parent)
                 {
                     this._filePath = path;
-                    this.NodeMoniker = parent.NodeMoniker == null ? null : parent.NodeMoniker + WorkspaceVisualNodeBase.MonikerSeparator + path;
+                    this.NodeMoniker = path;
                 }
 
                 protected override void OnInitialized()
@@ -84,6 +86,14 @@ namespace VS_RustAnalyzer
                     SetOverlayIcon(executable.Guid, executable.Id);
                     SetStateIcon(executable.Guid, executable.Id);
                     */
+                }
+
+                public override int Compare(WorkspaceVisualNodeBase right)
+                {
+                    CargoTargetNode node = right as CargoTargetNode;
+                    if (node == null)
+                        return -1;
+                    return _filePath.CompareTo(node._filePath);
                 }
             }
         }
