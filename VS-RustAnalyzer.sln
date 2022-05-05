@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS-RustAnalyzer", "VS-RustAnalyzer\VS-RustAnalyzer.csproj", "{23EA00CD-6759-490E-BC2E-1B6175986290}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS-RustAnalyzer.Test", "VS-RustAnalyzer.Test\VS-RustAnalyzer.Test.csproj", "{4153921E-C341-4290-B342-37F6FC6232A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{23EA00CD-6759-490E-BC2E-1B6175986290}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23EA00CD-6759-490E-BC2E-1B6175986290}.Release|x86.ActiveCfg = Release|x86
 		{23EA00CD-6759-490E-BC2E-1B6175986290}.Release|x86.Build.0 = Release|x86
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Debug|x86.Build.0 = Debug|Any CPU
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Release|x86.ActiveCfg = Release|Any CPU
+		{4153921E-C341-4290-B342-37F6FC6232A2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
