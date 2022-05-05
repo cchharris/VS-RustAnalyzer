@@ -12,11 +12,68 @@ using VS_RustAnalyzer.Cargo;
 
 namespace VS_RustAnalyzer
 {
+    // https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
+    /* I'm still figuring out how I want these laid out.
+     *  Old C# has
+     *  
+     *  Solution 'Name' (2 of 2 projects)
+     *  |-Proj Name
+     *  | |-Properties
+     *  | | |-AssemblyInfo.cs
+     *  | |-References
+     *  | | |-Analyzers
+     *  | | | |-Analyser
+     *  | | |-PackageName
+     *  | | |-NugetName
+     *  | |-Folders
+     *  | |-File.cs
+     *  | |-Code.cs
+     * 
+     * .NET Core changed this to
+     * 
+     *  Solution 'Name' (2 of 2 projects) # Can unload and reload subsets
+     *  |-Proj Name
+     *  | |-Dependencies
+     *  | | |-Analyzers
+     *  | | | |-Analyser
+     *  | | |-Frameworks
+     *  | | | |-Microsoft.NETCore.App
+     *  | | | | |-Microsoft.CSharp
+     *  | | | | |-Microsoft.*
+     *  | | |-Packages
+     *  | | | |-NugetName (version#)
+     *  | | | | |-Nuget Dependencies (version#)
+     *  | | |-Projects
+     *  | | | |-ProjName
+     *  | |-Folders
+     *  | |-File.cs
+     *  | |-Code.cs
+     *  
+     *  What we probably want is
+     *  
+     *  Workspace 'Name' (2 of 2 Packages) # Allow unloading and reloading subsets? Similar to C#
+     *  |-Cargo.toml
+     *  |-Config.toml
+     *  |-Cargo.lock
+     *  |-Package Name        # This is root if we don't see any workspace and we start in a folder containing a package Cargo.toml
+     *  | |-Cargo.toml
+     *  | |-Config.toml
+     *  | |-Cargo.lock          # If not a workspace
+     *  | |-Dependencies
+     *  | | |-Rust Toolchain
+     *  | | | |-Version, nightly, etc.
+     *  | | |-Crates
+     *  | | | |-Crate name (version)
+     *  | | | | |-Features
+     *  | | | | | |-Required feature
+     *  | | | | |-Dependency (version)
+     *  | |-Folders
+     *  | |-File.rs
+     *  | |-main.rs
+     */
     [Export(typeof(INodeExtender))]
     internal class RustWorkspaceNodeExtender : INodeExtender
     {
-
-
         public IChildrenSource ProvideChildren(WorkspaceVisualNodeBase parentNode)
         {
             if(parentNode is IFileNode && Util.IsCargoFile(Path.GetFileName((parentNode as IFileNode).FullPath)))
@@ -56,29 +113,37 @@ namespace VS_RustAnalyzer
 
             public Task<IReadOnlyCollection<WorkspaceVisualNodeBase>> GetCollectionAsync()
             {
-                var manifest = _cargoReaderService.CargoManifestForFile((_parentNode as IFileNode).FullPath);
+                var manifestPath = (_parentNode as IFileNode).FullPath;
+                var manifest = _cargoReaderService.CargoManifestForFile(manifestPath);
                 List<WorkspaceVisualNodeBase> children = new List<WorkspaceVisualNodeBase>();
                 foreach(var bin in manifest.BinTargetPaths("dev"))
                 {
-                    var node = new CargoTargetNode(_parentNode, Path.GetFileName(bin));
+                    var node = new CargoTargetNode(_parentNode, Path.GetFileName(bin), Path.Combine(Path.GetDirectoryName(manifestPath), bin));
                     children.Add(node);
                 }
                 return Task.FromResult(children as IReadOnlyCollection<WorkspaceVisualNodeBase>);
             }
 
-            class CargoTargetNode : WorkspaceVisualNodeBase
+            class CargoTargetNode : WorkspaceVisualNodeBase, IFileNode
             {
+                private string _fileName;
                 private string _filePath;
-                public CargoTargetNode(WorkspaceVisualNodeBase parent, string path) : base(parent)
+
+                public string FileName => _fileName;
+
+                public string FullPath => _filePath;
+
+                public CargoTargetNode(WorkspaceVisualNodeBase parent, string fileName, string filePath) : base(parent)
                 {
-                    this._filePath = path;
-                    this.NodeMoniker = path;
+                    this._filePath = filePath;
+                    this._fileName = fileName;
+                    this.NodeMoniker = fileName;
                 }
 
                 protected override void OnInitialized()
                 {
                     base.OnInitialized();
-                    UINode.Text = _filePath;
+                    UINode.Text = _fileName;
                     var executable = KnownMonikers.Console;
                     SetIcon(executable.Guid, executable.Id);
                     /*
@@ -93,7 +158,7 @@ namespace VS_RustAnalyzer
                     CargoTargetNode node = right as CargoTargetNode;
                     if (node == null)
                         return -1;
-                    return _filePath.CompareTo(node._filePath);
+                    return _fileName.CompareTo(node._fileName);
                 }
             }
         }
