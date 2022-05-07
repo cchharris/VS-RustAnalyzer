@@ -7,7 +7,7 @@ using Tomlet.Models;
 
 namespace VS_RustAnalyzer.Cargo.Toml
 {
-    internal class CargoPackageToml
+    public class CargoPackageToml
     {
         private TomlTable _table;
         private const string _name = "name";

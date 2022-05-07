@@ -49,6 +49,8 @@
     <Compile Include="Build\CargoBuildScanner.cs" />
     <Compile Include="Build\CargoContextProvider.cs" />
     <Compile Include="Build\CargoFileContextActionProviderFactory.cs" />
+    <Compile Include="Cargo\CargoTargets.cs" />
+    <Compile Include="Cargo\Toml\CargoTargetToml.cs" />
     <Compile Include="RustWorkspaceNodeExtender.cs" />
     <Compile Include="Cargo\CargoManifest.cs" />
     <Compile Include="Cargo\CargoReaderService.cs" />

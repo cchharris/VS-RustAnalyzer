@@ -10,7 +10,7 @@ namespace VS_RustAnalyzer.Cargo.Toml
     /**
      *  From https://doc.rust-lang.org/cargo/reference/manifest.html
      */
-    internal class CargoToml
+    public class CargoToml
     {
         // Incomplete.  Will fill in as needed.
 
@@ -38,5 +38,6 @@ namespace VS_RustAnalyzer.Cargo.Toml
         }
 
         public CargoPackageToml Package => new CargoPackageToml(_document.GetSubTable(_subtable_package));
+        public CargoTargetToml Lib => _document.ContainsKey(_subtable_lib) ? new CargoTargetToml(_document.GetSubTable(_subtable_lib), TargetType.Library) : null;
     }
 }
