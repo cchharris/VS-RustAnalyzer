@@ -1,10 +1,12 @@
 ﻿using System;
+using EnvDTE;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Workspace;
 using Microsoft.VisualStudio.Workspace.VSIntegration.UI;
@@ -87,6 +89,14 @@ namespace VS_RustAnalyzer
     [Export(typeof(INodeExtender))]
     internal class RustWorkspaceNodeExtender : INodeExtender
     {
+        protected SVsServiceProvider _provider;
+
+        [ImportingConstructor]
+        public RustWorkspaceNodeExtender([Import] SVsServiceProvider serviceProvider)
+        {
+            _provider = serviceProvider;
+        }
+
         public IChildrenSource ProvideChildren(WorkspaceVisualNodeBase parentNode)
         {
             if(parentNode is IFileNode && Util.IsCargoFile(Path.GetFileName((parentNode as IFileNode).FullPath)))
@@ -131,7 +141,7 @@ namespace VS_RustAnalyzer
                 List<WorkspaceVisualNodeBase> children = new List<WorkspaceVisualNodeBase>();
                 foreach(var bin in manifest.BinTargetPaths("dev"))
                 {
-                    var node = new CargoTargetNode(_parentNode, Path.GetFileName(bin), Path.Combine(Path.GetDirectoryName(manifestPath), bin));
+                    var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(bin), Path.Combine(Path.GetDirectoryName(manifestPath), bin));
                     children.Add(node);
                 }
                 return Task.FromResult(children as IReadOnlyCollection<WorkspaceVisualNodeBase>);
@@ -139,6 +149,7 @@ namespace VS_RustAnalyzer
 
             class CargoTargetNode : WorkspaceVisualNodeBase, IFileNode
             {
+                private readonly SVsServiceProvider _provider;
                 private string _fileName;
                 private string _filePath;
 
@@ -146,11 +157,25 @@ namespace VS_RustAnalyzer
 
                 public string FullPath => _filePath;
 
-                public CargoTargetNode(WorkspaceVisualNodeBase parent, string fileName, string filePath) : base(parent)
+                public CargoTargetNode(SVsServiceProvider provider, WorkspaceVisualNodeBase parent, string fileName, string filePath) : base(parent)
                 {
                     this._filePath = filePath;
+                    this._provider=provider;
                     this._fileName = fileName;
                     this.NodeMoniker = fileName;
+                }
+
+                public override Func<IEnumerable<WorkspaceVisualNodeBase>, bool, string, bool> InvokeAction {
+                    get {
+                        // Message = "Mouse", "Keyboard"
+                        return delegate (IEnumerable<WorkspaceVisualNodeBase> children, bool unknown, string message)
+                        {
+                            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+                            DTE dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(DTE));
+                            dte.Documents.Open((this.Parent as IFileNode).FullPath);
+                            return true;
+                        };
+                    }
                 }
 
                 protected override void OnInitialized()
