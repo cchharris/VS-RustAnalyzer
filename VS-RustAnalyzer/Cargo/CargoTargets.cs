@@ -165,11 +165,6 @@ namespace VS_RustAnalyzer.Cargo
             }
         }
 
-        private ICargoTarget LibFromToml()
-        {
-            Toml
-        }
-
         private CargoTarget CargoTargetFor(string name, string path, string extra, TargetType type, CrateType crate)
         {
             return new CargoTarget($"{name}.exe", path, _manifest.Path, (profile) => TargetPathForBin(profile, name, extra), type, crate);

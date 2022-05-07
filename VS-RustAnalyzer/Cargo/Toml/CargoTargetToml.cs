@@ -74,6 +74,8 @@ required-features = [] # Features required to build this target (N/A for lib).
             }
         }
 
+        public TargetType Type => _type;
+
         public CargoTargetToml(TomlTable tomlTable, TargetType type)
         {
             this._tomlTable = tomlTable;
