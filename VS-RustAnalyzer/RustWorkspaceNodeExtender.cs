@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Workspace;
 using Microsoft.VisualStudio.Workspace.VSIntegration.UI;
 using VS_RustAnalyzer.Cargo;
+using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace VS_RustAnalyzer
 {
@@ -141,7 +142,7 @@ namespace VS_RustAnalyzer
                 List<WorkspaceVisualNodeBase> children = new List<WorkspaceVisualNodeBase>();
                 foreach(var bin in manifest.BinTargetPaths("dev"))
                 {
-                    var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(bin), Path.Combine(Path.GetDirectoryName(manifestPath), bin));
+                    var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(bin), Path.Combine(Path.GetDirectoryName(manifestPath), bin), KnownMonikers.Console);
                     children.Add(node);
                 }
                 return Task.FromResult(children as IReadOnlyCollection<WorkspaceVisualNodeBase>);
@@ -152,17 +153,19 @@ namespace VS_RustAnalyzer
                 private readonly SVsServiceProvider _provider;
                 private string _fileName;
                 private string _filePath;
+                private ImageMoniker _moniker;
 
                 public string FileName => _fileName;
 
                 public string FullPath => _filePath;
 
-                public CargoTargetNode(SVsServiceProvider provider, WorkspaceVisualNodeBase parent, string fileName, string filePath) : base(parent)
+                public CargoTargetNode(SVsServiceProvider provider, WorkspaceVisualNodeBase parent, string fileName, string filePath, ImageMoniker moniker) : base(parent)
                 {
                     this._filePath = filePath;
                     this._provider=provider;
                     this._fileName = fileName;
                     this.NodeMoniker = fileName;
+                    this._moniker=moniker;
                 }
 
                 public override Func<IEnumerable<WorkspaceVisualNodeBase>, bool, string, bool> InvokeAction {
@@ -182,8 +185,7 @@ namespace VS_RustAnalyzer
                 {
                     base.OnInitialized();
                     UINode.Text = _fileName;
-                    var executable = KnownMonikers.Console;
-                    SetIcon(executable.Guid, executable.Id);
+                    SetIcon(_moniker.Guid, _moniker.Id);
                     /*
                     SetExpandedIcon(executable.Guid, executable.Id);
                     SetOverlayIcon(executable.Guid, executable.Id);

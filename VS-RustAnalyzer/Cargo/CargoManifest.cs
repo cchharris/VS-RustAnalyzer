@@ -41,9 +41,13 @@ namespace VS_RustAnalyzer.Cargo
         {
             this._path = path;
             _targets = new CargoTargets(this);
+            _targets.LoadTargets();
         }
 
-        public void ClearCache() { _cachedDoc = null; }
+        public void ClearCache() {
+            _cachedDoc = null;
+            _targets.ClearCache();
+        }
 
         public string PackageName => Toml.Package.Name;
 
@@ -54,7 +58,8 @@ namespace VS_RustAnalyzer.Cargo
 
         public IEnumerable<string> BinTargetPaths(string profile)
         {
-            foreach (var bin in _targets.EnumerateFileSystemInferredBins())
+            _targets.LoadTargets();
+            foreach (var bin in _targets.EnumerateTargetsByType(TargetType.Binary))
             {
                 yield return bin.TargetPath(profile);
             }

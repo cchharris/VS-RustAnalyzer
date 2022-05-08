@@ -18,6 +18,17 @@ namespace VS_RustAnalyzer.Cargo
 
         private CargoToml Toml => _manifest.Toml;
 
+        private Dictionary<string, CargoTarget> _targets = new Dictionary<string, CargoTarget>();
+        private Dictionary<TargetType, List<CargoTarget>> _targetsByType = new Dictionary<TargetType, List<CargoTarget>>();
+        bool _loaded = false;
+
+        public void ClearCache()
+        {
+            _targets.Clear();       
+            _targetsByType.Clear();
+            _loaded = false;
+        }
+
         public static string MapProfileToTargetFolderName(string profile)
         {
             switch(profile)
@@ -40,7 +51,34 @@ namespace VS_RustAnalyzer.Cargo
             return $"target\\{MapProfileToTargetFolderName(profile)}\\{extra}\\{bin}.exe";
         }
 
-        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredTargets()
+        public void LoadTargets()
+        {
+            if (_loaded) return;
+
+            var fileSystemInferred = EnumerateAllFileSystemInferredTargets();
+            foreach(var target in fileSystemInferred)
+            {
+                _targets[target.Name] = target;
+                if(!_targetsByType.TryGetValue(target.TargetType, out List<CargoTarget> targets))
+                {
+                    targets = new List<CargoTarget>();
+                    _targetsByType[target.TargetType] = targets;
+                }
+                targets.Add(target);
+            }
+
+            // Load from TOML
+            _loaded = true;
+        }
+
+        public IEnumerable<ICargoTarget> EnumerateTargetsByType(TargetType type)
+        {
+            if (_targetsByType.TryGetValue(type, out List<CargoTarget> targets))
+                return targets;
+            return Enumerable.Empty<ICargoTarget>();
+        }
+
+        private IEnumerable<CargoTarget> EnumerateAllFileSystemInferredTargets()
         {
             if(Toml.Package.AutoBins)
             {
@@ -86,7 +124,7 @@ namespace VS_RustAnalyzer.Cargo
             }
         }
 
-        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredBins()
+        private IEnumerable<CargoTarget> EnumerateFileSystemInferredBins()
         {
             var directoryContainingCargo = Path.GetDirectoryName(_manifest.Path);
             var srcPath = Path.Combine(directoryContainingCargo, "src");
@@ -103,7 +141,7 @@ namespace VS_RustAnalyzer.Cargo
             }
         }
 
-        public ICargoTarget FileSystemInferredLib()
+        private CargoTarget FileSystemInferredLib()
         {
             var directoryContainingCargo = Path.GetDirectoryName(_manifest.Path);
             var srcPath = Path.Combine(directoryContainingCargo, "src");
@@ -115,7 +153,7 @@ namespace VS_RustAnalyzer.Cargo
             return null;
         }
 
-        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredBenches()
+        private IEnumerable<CargoTarget> EnumerateFileSystemInferredBenches()
         {
             var directoryContainingCargo = Path.GetDirectoryName(_manifest.Path);
             var benchesPath = Path.Combine(directoryContainingCargo, "benches");
@@ -125,7 +163,7 @@ namespace VS_RustAnalyzer.Cargo
             }
         }
 
-        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredExamples()
+        private IEnumerable<CargoTarget> EnumerateFileSystemInferredExamples()
         {
             var directoryContainingCargo = Path.GetDirectoryName(_manifest.Path);
             var examplesPath = Path.Combine(directoryContainingCargo, "examples");
@@ -135,7 +173,7 @@ namespace VS_RustAnalyzer.Cargo
             }
         }
 
-        public IEnumerable<ICargoTarget> EnumerateFileSystemInferredTests()
+        private IEnumerable<CargoTarget> EnumerateFileSystemInferredTests()
         {
             var directoryContainingCargo = Path.GetDirectoryName(_manifest.Path);
             var testsPath = Path.Combine(directoryContainingCargo, "tests");
@@ -146,7 +184,7 @@ namespace VS_RustAnalyzer.Cargo
         }
 
 
-        private IEnumerable<ICargoTarget> EnumerateFileSystemForInferredTargets(string dir, string extra, TargetType type, CrateType crate)
+        private IEnumerable<CargoTarget> EnumerateFileSystemForInferredTargets(string dir, string extra, TargetType type, CrateType crate)
         {
             if (Directory.Exists(dir))
             {

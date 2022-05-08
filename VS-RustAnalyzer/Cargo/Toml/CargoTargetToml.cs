@@ -1,6 +1,7 @@
 ﻿using Tomlet.Models;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace VS_RustAnalyzer.Cargo.Toml
 {
@@ -39,15 +40,19 @@ required-features = [] # Features required to build this target (N/A for lib).
         private const string _crate_type = "crate-type";
         private const string _required_features = "required-features";
 
-        public string Name => _tomlTable.ContainsKey(_name) ? _tomlTable.GetString(_name) : string.Empty;
-        public string Path => _tomlTable.ContainsKey(_path) ? _tomlTable.GetString(_path) : string.Empty;
-        public bool Test => _tomlTable.ContainsKey(_test) ? _tomlTable.GetBoolean(_test) : _type != TargetType.Example;
-        public bool DocTest => _tomlTable.ContainsKey(_doctest) ? _tomlTable.GetBoolean(_doctest) : _type == TargetType.Library;
+        public string Name => NameDefined ? _tomlTable.GetString(_name) : string.Empty;
+        public bool NameDefined => _tomlTable.ContainsKey(_name);
+        public string Path => PathDefined ? _tomlTable.GetString(_path) : string.Empty;
+        public bool PathDefined => _tomlTable.ContainsKey(_path);
+        public bool Test => TestDefined ? _tomlTable.GetBoolean(_test) : _type != TargetType.Example;
+        public bool TestDefined => _tomlTable.ContainsKey(_test);
+        public bool DocTest => DocTestDefined ? _tomlTable.GetBoolean(_doctest) : _type == TargetType.Library;
+        public bool DocTestDefined => _tomlTable.ContainsKey (_doctest);
         public bool Bench
         {
             get
             {
-                if (_tomlTable.ContainsKey(_bench)) return _tomlTable.GetBoolean(_bench);
+                if (BenchDefined) return _tomlTable.GetBoolean(_bench);
                 switch (_type)
                 {
                     case TargetType.Library:
@@ -58,21 +63,55 @@ required-features = [] # Features required to build this target (N/A for lib).
                 }
             }
         }
+        public bool BenchDefined => _tomlTable.ContainsKey(_bench);
 
-        public bool Doc => _tomlTable.ContainsKey(_doc) ? _tomlTable.GetBoolean(_doc) : (_type == TargetType.Library || _type == TargetType.Binary);
-        public bool Plugin => _tomlTable.ContainsKey(_plugin) ? _tomlTable.GetBoolean(_plugin) : false;
-        public bool ProcMacro => _tomlTable.ContainsKey(_proc_macro) ? _tomlTable.GetBoolean(_proc_macro) : false;
-        public bool Harness => _tomlTable.ContainsKey(_harness) ? _tomlTable.GetBoolean(_harness) : true;
-        public string Edition => _tomlTable.ContainsKey(_edition) ? _tomlTable.GetString(_edition) : string.Empty;
+        public bool Doc => DocDefined ? _tomlTable.GetBoolean(_doc) : (_type == TargetType.Library || _type == TargetType.Binary);
+        public bool DocDefined => _tomlTable.ContainsKey(_doc);
+        public bool Plugin => PluginDefined ? _tomlTable.GetBoolean(_plugin) : false;
+        public bool PluginDefined => _tomlTable.ContainsKey(_plugin);
+        public bool ProcMacro => ProcMacroDefined ? _tomlTable.GetBoolean(_proc_macro) : false;
+        public bool ProcMacroDefined => _tomlTable.ContainsKey(_proc_macro);
+        public bool Harness => HarnessDefined ? _tomlTable.GetBoolean(_harness) : true;
+        public bool HarnessDefined => _tomlTable.ContainsKey(_harness);
+        public string Edition => EditionDefined ? _tomlTable.GetString(_edition) : string.Empty;
+        public bool EditionDefined => _tomlTable.ContainsKey(_edition);
+        public IEnumerable<CrateType> CrateTypes
+        {
+            get
+            {
+                if (CrateTypesDefined)
+                {
+                    var tomlCrates = _tomlTable.GetArray(_crate_type);
+                    foreach (var crate in tomlCrates)
+                    {
+                        if (Enum.TryParse(crate.StringValue, out CrateType type))
+                        {
+                            yield return type;
+                        }
+                    }
+                }
+                else switch (Type)
+                {
+                    case TargetType.Bench: yield return CrateType.Bench; break;
+                    case TargetType.Binary: yield return CrateType.Binary; break;
+                    case TargetType.Example: yield return CrateType.Binary; break;
+                    case TargetType.Library: yield return CrateType.RustLibrary; break;
+                    case TargetType.Test: yield return CrateType.Test; break;
+                    default: yield break;
+                }
+            }
+        }
+        public bool CrateTypesDefined => _tomlTable.ContainsKey(_crate_type);
         public IEnumerable<string> RequiredFeatures
         {
             get
             {
-                if (!_tomlTable.ContainsKey(_required_features))
+                if (!RequiredFeaturesDefined)
                     return Enumerable.Empty<string>();
                 return _tomlTable.GetArray(_required_features).ArrayValues.Select(x => x.StringValue);
             }
         }
+        public bool RequiredFeaturesDefined => _tomlTable.ContainsKey(_required_features); 
 
         public TargetType Type => _type;
 
