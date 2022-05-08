@@ -20,6 +20,8 @@ namespace VS_RustAnalyzer.Cargo
         public bool IsInferred => Inferred != null;
         public bool IsDefined => Defined != null;
 
+        // All of these are wrong - need to check if Defined has the individual field defined as well
+
         public string Name => IsDefined ? Defined.Name : Inferred.Name;
 
         public string SrcPath => IsDefined ? Defined.Path : Inferred.SrcPath;
@@ -30,25 +32,25 @@ namespace VS_RustAnalyzer.Cargo
 
         public TargetType TargetType => IsDefined ? Defined.Type : Inferred.TargetType;
 
-        public IEnumerable<CrateType> CrateType => throw new NotImplementedException();
+        public IEnumerable<CrateType> CrateType => IsDefined ? Defined.CrateTypes : new CrateType[] { Inferred.CrateType };
 
-        public bool Test => throw new NotImplementedException();
+        public bool Test => IsDefined ? Defined.Test : Inferred.Test;
 
-        public bool DocTest => throw new NotImplementedException();
+        public bool DocTest => IsDefined ? Defined.DocTest : Inferred.DocTest;
 
-        public bool Bench => throw new NotImplementedException();
+        public bool Bench => IsDefined ? Defined.Bench : Inferred.Bench;
 
-        public bool Doc => throw new NotImplementedException();
+        public bool Doc => IsDefined ? Defined.Doc : Inferred.Doc;
 
-        public bool Plugin => throw new NotImplementedException();
+        public bool Plugin => IsDefined ? Defined.Plugin : Inferred.Plugin;
 
-        public bool ProcMacro => throw new NotImplementedException();
+        public bool ProcMacro => IsDefined ? Defined.ProcMacro : Inferred.ProcMacro;
 
-        public bool Harness => throw new NotImplementedException();
+        public bool Harness => IsDefined ? Defined.Harness : Inferred.Harness;
 
-        public string Edition => throw new NotImplementedException();
+        public string Edition => IsDefined ? Defined.Edition : Inferred.Edition;
 
-        public IEnumerable<string> RequiredFeatures => throw new NotImplementedException();
+        public IEnumerable<string> RequiredFeatures => IsDefined ? Defined.RequiredFeatures : Inferred.RequiredFeatures;
 
         private CargoTargetInferred Inferred { get; }
         private CargoTargetToml Defined { get; }
