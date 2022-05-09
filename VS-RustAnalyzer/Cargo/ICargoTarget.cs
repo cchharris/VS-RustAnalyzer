@@ -40,7 +40,7 @@ namespace VS_RustAnalyzer.Cargo
         string ManifestPath { get; }
         TargetForProfileDelegate TargetPath { get; }
         TargetType TargetType { get; }
-        IEnumerable<CrateType> CrateType { get; }
+        IEnumerable<CrateType> CrateTypes { get; }
         bool Test { get; }
         bool DocTest { get; }
         bool Bench { get; }

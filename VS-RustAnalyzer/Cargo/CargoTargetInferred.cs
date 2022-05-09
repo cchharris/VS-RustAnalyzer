@@ -11,16 +11,14 @@ namespace VS_RustAnalyzer.Cargo
         public string Name { get; set; }
         public string SrcPath { get; set; }
         public string CratePath { get; set; }
-        public TargetForProfileDelegate TargetPath { get; set; }
         public TargetType TargetType { get; set; }
         public CrateType CrateType { get; set; }
 
-        public CargoTargetInferred(string name, string srcPath, string cratePath, TargetForProfileDelegate del, TargetType type, CrateType crate)
+        public CargoTargetInferred(string name, string srcPath, string cratePath, TargetType type, CrateType crate)
         {
             Name = name;
             SrcPath = srcPath;
             CratePath = cratePath;
-            TargetPath = del;
             TargetType = type;
             CrateType = crate;
         }
