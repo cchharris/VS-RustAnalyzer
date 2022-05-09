@@ -12,6 +12,7 @@ namespace VS_RustAnalyzer.Cargo.Toml
     {
         private TomlTable _tomlTable;
         private readonly TargetType _type;
+        private readonly string _nameDefault;
 
         /**
 name = "foo"           # The name of the target.
@@ -40,7 +41,10 @@ required-features = [] # Features required to build this target (N/A for lib).
         private const string _crate_type = "crate-type";
         private const string _required_features = "required-features";
 
-        public string Name => NameDefined ? _tomlTable.GetString(_name) : string.Empty;
+        public string Name => NameDefined ? _tomlTable.GetString(_name) :
+            (string.IsNullOrEmpty(_nameDefault) ?
+            throw new InvalidOperationException("Name field must be defined for all targets but default lib / exe") :
+            _nameDefault);
         public bool NameDefined => _tomlTable.ContainsKey(_name);
         public string Path => PathDefined ? _tomlTable.GetString(_path) : string.Empty;
         public bool PathDefined => _tomlTable.ContainsKey(_path);
@@ -115,10 +119,12 @@ required-features = [] # Features required to build this target (N/A for lib).
 
         public TargetType Type => _type;
 
-        public CargoTargetToml(TomlTable tomlTable, TargetType type)
+        public CargoTargetToml(TomlTable tomlTable, TargetType type, string nameDefault)
         {
             this._tomlTable = tomlTable;
             this._type=type;
+            this._nameDefault = nameDefault;
         }
+
     }
 }

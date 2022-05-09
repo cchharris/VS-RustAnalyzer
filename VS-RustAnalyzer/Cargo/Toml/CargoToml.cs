@@ -39,11 +39,11 @@ namespace VS_RustAnalyzer.Cargo.Toml
 
         public CargoPackageToml Package => new CargoPackageToml(_document.GetSubTable(_subtable_package));
         // 0-1 Lib, 0+ Bin, Example, Test, Bench
-        public CargoTargetToml Lib => _document.ContainsKey(_subtable_lib) ? new CargoTargetToml(_document.GetSubTable(_subtable_lib), TargetType.Library) : null;
-        public IEnumerable<CargoTargetToml> Bins => TablesFromKey(_subtable_bin).Select(t => new CargoTargetToml(t, TargetType.Binary));
-        public IEnumerable<CargoTargetToml> Examples => TablesFromKey(_subtable_example).Select(t => new CargoTargetToml(t, TargetType.Example));
-        public IEnumerable<CargoTargetToml> Tests => TablesFromKey(_subtable_test).Select(t => new CargoTargetToml(t, TargetType.Test));
-        public IEnumerable<CargoTargetToml> Benches => TablesFromKey(_subtable_bench).Select(t => new CargoTargetToml(t, TargetType.Bench));
+        public CargoTargetToml Lib => _document.ContainsKey(_subtable_lib) ? new CargoTargetToml(_document.GetSubTable(_subtable_lib), TargetType.Library, Package.Name) : null;
+        public IEnumerable<CargoTargetToml> Bins => TablesFromKey(_subtable_bin).Select(t => new CargoTargetToml(t, TargetType.Binary, string.Empty));
+        public IEnumerable<CargoTargetToml> Examples => TablesFromKey(_subtable_example).Select(t => new CargoTargetToml(t, TargetType.Example, string.Empty));
+        public IEnumerable<CargoTargetToml> Tests => TablesFromKey(_subtable_test).Select(t => new CargoTargetToml(t, TargetType.Test, string.Empty));
+        public IEnumerable<CargoTargetToml> Benches => TablesFromKey(_subtable_bench).Select(t => new CargoTargetToml(t, TargetType.Bench, string.Empty));
 
         public IEnumerable<CargoTargetToml> AllTargets { get
             {

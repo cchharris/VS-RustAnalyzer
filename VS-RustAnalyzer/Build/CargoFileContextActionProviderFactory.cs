@@ -97,7 +97,7 @@ namespace VS_RustAnalyzer
                         ProcessStartInfo info = new ProcessStartInfo()
                         {
                             FileName = "cargo", 
-                            Arguments = "build --message-format json",
+                            Arguments = "build --message-format json-diagnostic-rendered-ansi",
                             WorkingDirectory = Path.GetDirectoryName(_filePath),
                             UseShellExecute = false,
                             CreateNoWindow = true,

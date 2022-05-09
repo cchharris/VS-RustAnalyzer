@@ -7,7 +7,7 @@ edition = "2021"
 
 [[bin]]
 name="multifile"
-path="src/bin/singlefile.rs" # Overwrites singlefile.rs
+path="src/bin/singlefile.rs"
 #test=false
 
 [dependencies]

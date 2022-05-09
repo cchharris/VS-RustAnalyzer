@@ -7,11 +7,10 @@ using VS_RustAnalyzer.Cargo.Toml;
 
 namespace VS_RustAnalyzer.Cargo
 {
-    public class CargoTarget : ICargoTarget
+    public class CargoTargetInferred : ICargoTarget
     {
         private string _manifestPath;
-        public string ManifestPath => _manifestPath;
-        public CargoTarget(string manifestPath, CargoTargetInferred inferred, CargoTargetToml defined)
+        public CargoTargetInferred(string manifestPath, CargoTargetInferred inferred, CargoTargetToml defined)
         {
             Inferred=inferred;
             Defined=defined;
@@ -23,10 +22,22 @@ namespace VS_RustAnalyzer.Cargo
 
         // All of these are wrong - need to check if Defined has the individual field defined as well
 
-        public string Name => IsDefined ? Defined.Name : Inferred.Name;
+        public string Name {  get
+        {
+                // If Toml definition exists, and the field exists, use it
+                if (IsDefined && Defined.NameDefined)
+                    return Defined.Name;
+                // If Toml definition doesn't  exist, or it does but field doesn't exist
+
+                // If Inferred exists, use it
+                if (IsInferred)
+                    return Inferred.Name;
+                return Defined.Name;
+        } }
 
         public string SrcPath => IsDefined ? Defined.Path : Inferred.SrcPath;
 
+        public string ManifestPath => _manifestPath;
 
         public TargetForProfileDelegate TargetPath => throw new NotImplementedException();
 
