@@ -137,6 +137,9 @@ namespace VS_RustAnalyzer
 
             public Task<IReadOnlyCollection<WorkspaceVisualNodeBase>> GetCollectionAsync()
             {
+                //TODO: Make independent node?
+                _parentNode.SetIcon(Assets.Guid, Assets.RSPackageClosedId);
+                _parentNode.SetExpandedIcon(Assets.Guid, Assets.RSPackageOpenedId);
                 var manifestPath = (_parentNode as IFileNode).FullPath;
                 var manifest = _cargoReaderService.CargoManifestForFile(manifestPath);
                 List<WorkspaceVisualNodeBase> children = new List<WorkspaceVisualNodeBase>();

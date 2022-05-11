@@ -11,6 +11,8 @@
     <ID Name="RSFileNode" Value="3" />
     <ID Name="RSConsole" Value="4" />
     <ID Name="RSClassLibrary" Value="5" />
+    <ID Name="RSPackageClosed" Value="6" />
+    <ID Name="RSPackageOpen" Value="7" />
   </Symbols>
   <Images>
     <Image Guid="$(AssetsGuid)" ID="$(file_type_cargo)">
@@ -40,6 +42,16 @@
     </Image>
     <Image Guid="$(AssetsGuid)" ID="$(RSClassLibrary)" AllowColorInversion="true">
       <Source Uri="$(Resources)/RSClassLibrary.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSPackageClosed)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSPackageClosed.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSPackageOpen)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSPackageOpen.png">
         <Size Value="32" />
       </Source>
     </Image>
