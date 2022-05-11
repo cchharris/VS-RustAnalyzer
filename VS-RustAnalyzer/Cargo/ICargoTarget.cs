@@ -31,7 +31,7 @@ namespace VS_RustAnalyzer.Cargo
     }
 
 
-    public delegate string TargetForProfileDelegate(string profile);
+    public delegate IEnumerable<string> TargetForProfileDelegate(string profile);
 
     public interface ICargoTarget
     {

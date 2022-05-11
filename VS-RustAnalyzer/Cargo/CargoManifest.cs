@@ -61,8 +61,16 @@ namespace VS_RustAnalyzer.Cargo
             _targets.LoadTargets();
             foreach (var bin in _targets.EnumerateTargetsByType(TargetType.Binary))
             {
-                yield return bin.TargetPath(profile);
+                foreach(var target in bin.TargetPath(profile))
+                {
+                    yield return target;
+                }
             }
+        }
+
+        public IEnumerable<ICargoTarget> EnumerateTargetsByType(TargetType type)
+        {
+            return _targets.EnumerateTargetsByType(type);
         }
     }
 }

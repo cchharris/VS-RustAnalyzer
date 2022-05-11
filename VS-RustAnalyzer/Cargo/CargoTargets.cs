@@ -18,22 +18,24 @@ namespace VS_RustAnalyzer.Cargo
 
         private CargoToml Toml => _manifest.Toml;
 
-        private Dictionary<string, CargoTarget> _targetsByName = new Dictionary<string, CargoTarget>();
+        // Only one name allowed per Type
+        private Dictionary<TargetType, Dictionary<string, CargoTarget>> _targetsByTypeByName = new Dictionary<TargetType, Dictionary<string, CargoTarget>>();
+        // Only to be used to stop loading inferred paths if there is a defined one to the same path
         private Dictionary<string, CargoTarget> _targetsByPath = new Dictionary<string, CargoTarget>();
         private Dictionary<TargetType, List<CargoTarget>> _targetsByType = new Dictionary<TargetType, List<CargoTarget>>();
         bool _loaded = false;
 
         public void ClearCache()
         {
-            _targetsByName.Clear();       
-            _targetsByPath.Clear();       
+            _targetsByTypeByName.Clear();
+            _targetsByPath.Clear();
             _targetsByType.Clear();
             _loaded = false;
         }
 
         public static string MapProfileToTargetFolderName(string profile)
         {
-            switch(profile)
+            switch (profile)
             {
                 case CargoManifest.ProfileDev:
                 case CargoManifest.ProfileTest:
@@ -43,14 +45,34 @@ namespace VS_RustAnalyzer.Cargo
                     return "release";
                 default: // Custom profile
                     return profile;
-                   
+
             }
         }
-        private static string TargetPathForBin(string profile, string bin, string extra = "")
+
+        private static string SuffixForCrateType(CrateType type)
         {
-            if (string.IsNullOrEmpty(extra))
-                return $"target\\{MapProfileToTargetFolderName(profile)}\\{bin}.exe";
-            return $"target\\{MapProfileToTargetFolderName(profile)}\\{extra}\\{bin}.exe";
+            switch (type)
+            {
+                case CrateType.Binary: return ".exe";
+                case CrateType.RustLibrary:
+                case CrateType.Library: return ".rlib";
+                case CrateType.StaticLibrary: return ".lib";
+                case CrateType.CDynamicLibrary:
+                case CrateType.DynamicLibrary: return ".dll";
+                default:
+                    throw new ArgumentException("Unknown crate type");
+            }
+        }
+
+        private static IEnumerable<string> TargetPathsForCrate(string profile, string name, IEnumerable<CrateType> crate, string extra = "")
+        {
+            foreach(var c in crate)
+            {
+                if (string.IsNullOrEmpty(extra))
+                    yield return Path.Combine("target", MapProfileToTargetFolderName(profile), $"{name}{SuffixForCrateType(c)}");
+                else
+                    yield return Path.Combine("target", MapProfileToTargetFolderName(profile), extra, $"{name}{SuffixForCrateType(c)}");
+            }
         }
 
         /**
@@ -94,9 +116,19 @@ namespace VS_RustAnalyzer.Cargo
                 targets.Add(target);
             }
 
+            void TrackTargetNameOfType(TargetType type, string name, CargoTarget target)
+            {
+                if (!_targetsByTypeByName.TryGetValue(type, out Dictionary<string, CargoTarget> targets))
+                {
+                    targets = new Dictionary<string, CargoTarget>();
+                    _targetsByTypeByName[type] = targets;
+                }
+                targets[name] = target;
+            }
+
             // Load from TOML
             var definedTargets = Toml.AllTargets;
-            foreach(CargoTargetToml tt in definedTargets)
+            foreach (CargoTargetToml tt in definedTargets)
             {
                 string name = tt.Name;
                 string path = tt.PathDefined ? tt.Path : InferPathFromName(name, tt.Type);
@@ -105,10 +137,10 @@ namespace VS_RustAnalyzer.Cargo
                     name,
                     path,
                     tt.Type,
-                    (profile) => TargetPathForBin(profile, name, tt.Type == TargetType.Example ? "example" : string.Empty),
+                    (profile) => TargetPathsForCrate(profile, name, tt.CrateTypes, tt.Type == TargetType.Example ? "example" : string.Empty),
                     tt);
 
-                _targetsByName[name] = target;
+                TrackTargetNameOfType(tt.Type, name, target);
                 _targetsByPath[NormalizePath(path)] = target;
                 AddTargetOfType(tt.Type, target);
             }
@@ -116,15 +148,15 @@ namespace VS_RustAnalyzer.Cargo
             // Filter out targets whose name is already being squatted by a Toml target,
             // Or an inferred target which has a target already targeting its path
             var inferredTargets = EnumerateAllFileSystemInferredTargets()
-                .Where(t => !_targetsByName.ContainsKey(t.Name) && !_targetsByPath.ContainsKey(NormalizePath(t.SrcPath)));
-            foreach(var it in inferredTargets)
+                .Where(t => !(_targetsByTypeByName.TryGetValue(t.TargetType, out Dictionary<string, CargoTarget> trackedTargets) && trackedTargets.ContainsKey(t.Name)) && !_targetsByPath.ContainsKey(NormalizePath(t.SrcPath)));
+            foreach (var it in inferredTargets)
             {
                 var target = new CargoTarget(_manifest.Path,
                     it.Name,
                     it.SrcPath,
                     it.TargetType,
-                    (profile) => TargetPathForBin(profile, it.Name, it.TargetType == TargetType.Example ? "example" : string.Empty));
-                _targetsByName[it.Name] = target;
+                    (profile) => TargetPathsForCrate(profile, it.Name, new CrateType[] { it.CrateType }, it.TargetType == TargetType.Example ? "example" : string.Empty));
+                TrackTargetNameOfType(it.TargetType, it.Name, target);
                 _targetsByPath[NormalizePath(it.SrcPath)] = target;
                 AddTargetOfType(it.TargetType, target);
             }
@@ -141,9 +173,13 @@ namespace VS_RustAnalyzer.Cargo
 
         private IEnumerable<CargoTargetInferred> EnumerateAllFileSystemInferredTargets()
         {
-            if(Toml.Package.AutoBins)
+            var lib = FileSystemInferredLib();
+            if (lib != null)
+                yield return lib;
+
+            if (Toml.Package.AutoBins)
             {
-                foreach(var target in EnumerateFileSystemInferredBins())
+                foreach (var target in EnumerateFileSystemInferredBins())
                 {
                     yield return target;
                 }
@@ -151,21 +187,21 @@ namespace VS_RustAnalyzer.Cargo
 
             if (Toml.Package.AutoExamples)
             {
-                foreach(var target in EnumerateFileSystemInferredExamples())
+                foreach (var target in EnumerateFileSystemInferredExamples())
                 {
                     yield return target;
                 }
             }
             if (Toml.Package.AutoTests)
             {
-                foreach(var target in EnumerateFileSystemInferredTests())
+                foreach (var target in EnumerateFileSystemInferredTests())
                 {
                     yield return target;
                 }
             }
             if (Toml.Package.AutoBenches)
             {
-                foreach(var target in EnumerateFileSystemInferredBenches())
+                foreach (var target in EnumerateFileSystemInferredBenches())
                 {
                     yield return target;
                 }
@@ -188,12 +224,12 @@ namespace VS_RustAnalyzer.Cargo
             var srcPath = Path.Combine(directoryContainingCargo, "src");
             var defaultMain = Path.Combine(srcPath, "main.rs");
 
-            if(File.Exists(defaultMain))
+            if (File.Exists(defaultMain))
             {
                 yield return InferredCargoTargetFor(PackageNameAsTarget(), defaultMain, string.Empty, TargetType.Binary, CrateType.Binary);
             }
             var binPath = Path.Combine(srcPath, "bin");
-            foreach(var target in EnumerateFileSystemForInferredTargets(binPath, string.Empty, TargetType.Binary, CrateType.Binary))
+            foreach (var target in EnumerateFileSystemForInferredTargets(binPath, string.Empty, TargetType.Binary, CrateType.Binary))
             {
                 yield return target;
             }
@@ -204,7 +240,7 @@ namespace VS_RustAnalyzer.Cargo
             var directoryContainingCargo = Path.GetDirectoryName(_manifest.Path);
             var srcPath = Path.Combine(directoryContainingCargo, "src");
             var defaultLib = Path.Combine(srcPath, "lib.rs");
-            if(File.Exists(defaultLib))
+            if (File.Exists(defaultLib))
             {
                 return InferredCargoTargetFor(PackageNameAsTarget(), defaultLib, string.Empty, TargetType.Library, CrateType.RustLibrary);
             }
@@ -270,13 +306,13 @@ namespace VS_RustAnalyzer.Cargo
         {
             return _manifest.PackageName.Replace('-', '_');
         }
-        
+
         public string InferPathFromName(string name, TargetType type)
         {
             switch (type)
             {
                 case TargetType.Library:
-                        return Path.Combine("src", "lib.rs");
+                    return Path.Combine("src", "lib.rs");
                 case TargetType.Test:
                     return InferFilePathFromName(name, Path.Combine(_manifest.Path, "tests"), "test");
                 case TargetType.Example:

@@ -140,10 +140,21 @@ namespace VS_RustAnalyzer
                 var manifestPath = (_parentNode as IFileNode).FullPath;
                 var manifest = _cargoReaderService.CargoManifestForFile(manifestPath);
                 List<WorkspaceVisualNodeBase> children = new List<WorkspaceVisualNodeBase>();
-                foreach(var bin in manifest.BinTargetPaths("dev"))
+                foreach(var bin in manifest.EnumerateTargetsByType(TargetType.Library))
                 {
-                    var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(bin), Path.Combine(Path.GetDirectoryName(manifestPath), bin), KnownMonikers.Console);
-                    children.Add(node);
+                    foreach (var targetPath in bin.TargetPath(CargoManifest.ProfileDev))
+                    {
+                        var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(targetPath), Path.Combine(Path.GetDirectoryName(manifestPath), targetPath), Assets.RSClassLibrarymoniker);
+                        children.Add(node);
+                    }
+                }
+                foreach(var bin in manifest.EnumerateTargetsByType(TargetType.Binary))
+                {
+                    foreach (var targetPath in bin.TargetPath(CargoManifest.ProfileDev))
+                    {
+                        var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(targetPath), Path.Combine(Path.GetDirectoryName(manifestPath), targetPath), Assets.RSConsoleMoniker);
+                        children.Add(node);
+                    }
                 }
                 return Task.FromResult(children as IReadOnlyCollection<WorkspaceVisualNodeBase>);
             }

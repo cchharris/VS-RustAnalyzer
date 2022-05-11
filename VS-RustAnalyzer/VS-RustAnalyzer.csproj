@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Assets.cs" />
     <Compile Include="Builds.cs" />
     <Compile Include="Build\CargoBuildScanner.cs" />
     <Compile Include="Build\CargoContextProvider.cs" />
@@ -85,6 +86,9 @@
     <Content Include="Grammars\toml.tmLanguage">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Icons\RSConsole.png" />
+    <Resource Include="Icons\RSFileNode.png" />
+    <Resource Include="Icons\RSClassLibrary.png" />
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

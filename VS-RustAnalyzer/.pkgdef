@@ -3,7 +3,7 @@
 "toml"="$PackageFolder$\Grammars"
 
 [$RootKey$\ShellFileAssociations\.rs]
-"DefaultIconMoniker"="e5e12661-b8a3-4517-8ffb-f188407ed7a7:1"
+"DefaultIconMoniker"="F43B625C-EFA4-4346-9E7C-D792611D3465:1"
 
 [$RootKey$\ShellFileAssociations\.toml]
-"DefaultIconMoniker"="e5e12661-b8a3-4517-8ffb-f188407ed7a7:0"
+"DefaultIconMoniker"="F43B625C-EFA4-4346-9E7C-D792611D3465:0"
