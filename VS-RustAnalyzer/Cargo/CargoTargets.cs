@@ -53,6 +53,8 @@ namespace VS_RustAnalyzer.Cargo
         {
             switch (type)
             {
+                case CrateType.Bench:
+                case CrateType.Test:
                 case CrateType.Binary: return ".exe";
                 case CrateType.RustLibrary:
                 case CrateType.Library: return ".rlib";
@@ -137,7 +139,7 @@ namespace VS_RustAnalyzer.Cargo
                     name,
                     path,
                     tt.Type,
-                    (profile) => TargetPathsForCrate(profile, name, tt.CrateTypes, tt.Type == TargetType.Example ? "example" : string.Empty),
+                    (profile) => TargetPathsForCrate(profile, name, tt.CrateTypes, tt.Type == TargetType.Example ? "examples" : string.Empty),
                     tt);
 
                 TrackTargetNameOfType(tt.Type, name, target);

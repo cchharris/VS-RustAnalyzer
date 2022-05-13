@@ -159,6 +159,30 @@ namespace VS_RustAnalyzer
                         children.Add(node);
                     }
                 }
+                foreach(var bin in manifest.EnumerateTargetsByType(TargetType.Test))
+                {
+                    foreach (var targetPath in bin.TargetPath(CargoManifest.ProfileDev))
+                    {
+                        var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(targetPath), Path.Combine(Path.GetDirectoryName(manifestPath), targetPath), Assets.RSTestMoniker);
+                        children.Add(node);
+                    }
+                }
+                foreach(var bin in manifest.EnumerateTargetsByType(TargetType.Example))
+                {
+                    foreach (var targetPath in bin.TargetPath(CargoManifest.ProfileDev))
+                    {
+                        var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(targetPath), Path.Combine(Path.GetDirectoryName(manifestPath), targetPath), Assets.RSExampleMoniker);
+                        children.Add(node);
+                    }
+                }
+                foreach(var bin in manifest.EnumerateTargetsByType(TargetType.Bench))
+                {
+                    foreach (var targetPath in bin.TargetPath(CargoManifest.ProfileDev))
+                    {
+                        var node = new CargoTargetNode((Extender as RustWorkspaceNodeExtender)._provider, _parentNode, Path.GetFileName(targetPath), Path.Combine(Path.GetDirectoryName(manifestPath), targetPath), Assets.RSBenchMoniker);
+                        children.Add(node);
+                    }
+                }
                 return Task.FromResult(children as IReadOnlyCollection<WorkspaceVisualNodeBase>);
             }
 

@@ -91,6 +91,9 @@
     <Resource Include="Icons\RSClassLibrary.png" />
     <Resource Include="Icons\RSPackageClosed.png" />
     <Resource Include="Icons\RSPackageOpen.png" />
+    <Resource Include="Icons\RSBench.png" />
+    <Resource Include="Icons\RSExample.png" />
+    <Resource Include="Icons\RSTest.png" />
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

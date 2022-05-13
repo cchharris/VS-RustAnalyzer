@@ -15,11 +15,17 @@ namespace VS_RustAnalyzer
         public static int RSClassLibraryId = 5;
         public static int RSPackageClosedId = 6;
         public static int RSPackageOpenedId = 7;
+        public static int RSExampleId = 8;
+        public static int RSBenchId = 9;
+        public static int RSTestId = 10;
 
         public static ImageMoniker RSConsoleMoniker => new ImageMoniker { Guid = Guid, Id = RSConsoleId };
         public static ImageMoniker RSFileNodeMoniker => new ImageMoniker { Guid = Guid, Id = RSFileNodeId };
         public static ImageMoniker RSClassLibrarymoniker => new ImageMoniker { Guid = Guid, Id = RSClassLibraryId };
         public static ImageMoniker RSPackageClosedMoniker => new ImageMoniker { Guid = Guid, Id = RSPackageClosedId };
         public static ImageMoniker RSPackageOpenMoniker => new ImageMoniker { Guid = Guid, Id = RSPackageOpenedId };
+        public static ImageMoniker RSExampleMoniker => new ImageMoniker { Guid = Guid, Id = RSExampleId };
+        public static ImageMoniker RSBenchMoniker => new ImageMoniker { Guid = Guid, Id = RSBenchId };
+        public static ImageMoniker RSTestMoniker => new ImageMoniker { Guid = Guid, Id = RSTestId };
     }
 }
