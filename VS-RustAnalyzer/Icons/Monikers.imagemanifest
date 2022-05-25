@@ -5,9 +5,6 @@
   <Symbols>
     <String Name="Resources" Value="/VS-RustAnalyzer;Component/Icons" />
     <Guid Name="AssetsGuid" Value="{F43B625C-EFA4-4346-9E7C-D792611D3465}" />
-    <ID Name="file_type_cargo" Value="0" />
-    <ID Name="file_type_rust" Value="1" />
-    <ID Name="file_type_rust_toolchain" Value="2" />
     <ID Name="RSFileNode" Value="3" />
     <ID Name="RSConsole" Value="4" />
     <ID Name="RSClassLibrary" Value="5" />
