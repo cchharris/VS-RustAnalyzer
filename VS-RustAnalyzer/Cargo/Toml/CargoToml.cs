@@ -10,7 +10,7 @@ namespace VS_RustAnalyzer.Cargo.Toml
     /**
      *  From https://doc.rust-lang.org/cargo/reference/manifest.html
      */
-    internal class CargoToml
+    public class CargoToml
     {
         // Incomplete.  Will fill in as needed.
 
@@ -38,5 +38,26 @@ namespace VS_RustAnalyzer.Cargo.Toml
         }
 
         public CargoPackageToml Package => new CargoPackageToml(_document.GetSubTable(_subtable_package));
+        // 0-1 Lib, 0+ Bin, Example, Test, Bench
+        public CargoTargetToml Lib => _document.ContainsKey(_subtable_lib) ? new CargoTargetToml(_document.GetSubTable(_subtable_lib), TargetType.Library, Package.Name) : null;
+        public IEnumerable<CargoTargetToml> Bins => TablesFromKey(_subtable_bin).Select(t => new CargoTargetToml(t, TargetType.Binary, string.Empty));
+        public IEnumerable<CargoTargetToml> Examples => TablesFromKey(_subtable_example).Select(t => new CargoTargetToml(t, TargetType.Example, string.Empty));
+        public IEnumerable<CargoTargetToml> Tests => TablesFromKey(_subtable_test).Select(t => new CargoTargetToml(t, TargetType.Test, string.Empty));
+        public IEnumerable<CargoTargetToml> Benches => TablesFromKey(_subtable_bench).Select(t => new CargoTargetToml(t, TargetType.Bench, string.Empty));
+
+        public IEnumerable<CargoTargetToml> AllTargets { get
+            {
+                var lib = Lib;
+                IEnumerable<CargoTargetToml> libEnum = Lib == null ? Enumerable.Empty<CargoTargetToml>() : new CargoTargetToml[] { lib };
+                return libEnum.Concat(Bins).Concat(Examples).Concat(Tests).Concat(Benches);
+            }
+        }
+
+        private IEnumerable<TomlTable> TablesFromKey(string key)
+        {
+            if (!_document.ContainsKey(key))
+                return Enumerable.Empty<TomlTable>();
+            return _document.GetArray(key).Where(t => t is TomlTable).Select(t => t as TomlTable);
+        }
     }
 }

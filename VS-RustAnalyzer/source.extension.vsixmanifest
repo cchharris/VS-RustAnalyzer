@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="VS_RustAnalyzer.c5a2b628-2a68-4643-808e-0838e3fb240b" Version="0.2.1" Language="en-US" Publisher="Christopher Harris" />
+        <Identity Id="VS_RustAnalyzer.c5a2b628-2a68-4643-808e-0838e3fb240b" Version="0.3.0" Language="en-US" Publisher="Christopher Harris" />
         <DisplayName>VS_RustAnalyzer</DisplayName>
         <Description xml:space="preserve">Unofficial rust-analyzer.exe support for visual studio.  Integrates Cargo and other rust features with Visual Studio, to give as close to native support as possible.</Description>
         <MoreInfo>https://github.com/cchharris/VS-RustAnalyzer</MoreInfo>
