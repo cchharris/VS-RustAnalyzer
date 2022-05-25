@@ -1,6 +1,11 @@
 # VS-RustAnalyzer
 
-[![.NET](https://github.com/cchharris/VS-RustAnalyzer/actions/workflows/dotnet.yml/badge.svg)](https://github.com/cchharris/VS-RustAnalyzer/actions/workflows/dotnet.yml)
+#### [Github](https://github.com/cchharris/VS-RustAnalyzer)
+[![.NET](https://github.com/cchharris/VS-RustAnalyzer/actions/workflows/dotnet.yml/badge.svg)](https://github.com/cchharris/VS-RustAnalyzer/actions/workflows/dotnet.yml)  [![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/cchharris/VS-RustAnalyzer?include_prereleases)](https://github.com/cchharris/VS-RustAnalyzer/releases)
+
+#### [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=cchharris.vsrustanalyzer&ssr=false#overview)
+
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/cchharris.vsrustanalyzer)](https://marketplace.visualstudio.com/items?itemName=cchharris.vsrustanalyzer&ssr=false#overview)  [![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/cchharris.vsrustanalyzer)](https://marketplace.visualstudio.com/items?itemName=cchharris.vsrustanalyzer&ssr=false#overview)
 
 Source Repository for [VS_RustAnalyzer](https://marketplace.visualstudio.com/items?itemName=cchharris.vsrustanalyzer) Visual Studio Package.
 
@@ -10,7 +15,7 @@ This is an *unofficial* extension, with the aim of working with Rust in Visual S
 
 ## Installation
 
-This extension assumes you have already [installed rust-analyze](https://rust-analyzer.github.io/manual.html#rust-analyzer-language-server-binary).  It will look for `rust-analyzer.exe` on your `PATH`.  Alternatively, you can open Tools->Rust Analyzer and give the full path to `rust-analyzer.exe`, and it should work with a restart.
+This extension assumes you have already [installed rust-analyzer](https://rust-analyzer.github.io/manual.html#rust-analyzer-language-server-binary).  It will look for `rust-analyzer.exe` on your `PATH`.  Alternatively, you can open Tools->Rust Analyzer and give the full path to `rust-analyzer.exe`, and it should work with a restart.
 
 ## Features
 ### Language Server

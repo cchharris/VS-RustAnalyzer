@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VS_RustAnalyzer.Cargo
 {
-    enum TargetType
+    public enum TargetType
     {
         Library, // lib
         Binary, // bin
@@ -15,9 +15,13 @@ namespace VS_RustAnalyzer.Cargo
         Bench // bench
     }
 
-    enum CrateType
+    public enum CrateType
     {
+        // Provided for ease of use - don't actually matter here.
         Binary, // bin
+        Bench, // bench
+        Test, // test
+        // Below are where these matter - Libraries and Examples only
         Library, // lib
         RustLibrary, // rlib
         DynamicLibrary, // dylib
@@ -26,7 +30,25 @@ namespace VS_RustAnalyzer.Cargo
         Macro, // proc-macro
     }
 
-    internal interface ICargoTarget
+
+    public delegate IEnumerable<string> TargetForProfileDelegate(string profile);
+
+    public interface ICargoTarget
     {
+        string Name { get; }
+        string SrcPath { get; }
+        string ManifestPath { get; }
+        TargetForProfileDelegate TargetPath { get; }
+        TargetType TargetType { get; }
+        IEnumerable<CrateType> CrateTypes { get; }
+        bool Test { get; }
+        bool DocTest { get; }
+        bool Bench { get; }
+        bool Doc { get; }
+        bool Plugin { get; }
+        bool ProcMacro { get; }
+        bool Harness { get; }
+        string Edition { get; }
+        IEnumerable<string> RequiredFeatures { get; }
     }
 }

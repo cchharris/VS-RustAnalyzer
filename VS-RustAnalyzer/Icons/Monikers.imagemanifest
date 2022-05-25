@@ -4,10 +4,15 @@
 <ImageManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/VisualStudio/ImageManifestSchema/2014">
   <Symbols>
     <String Name="Resources" Value="/VS-RustAnalyzer;Component/Icons" />
-    <Guid Name="AssetsGuid" Value="{e5e12661-b8a3-4517-8ffb-f188407ed7a7}" />
-    <ID Name="file_type_cargo" Value="0" />
-    <ID Name="file_type_rust" Value="1" />
-    <ID Name="file_type_rust_toolchain" Value="2" />
+    <Guid Name="AssetsGuid" Value="{F43B625C-EFA4-4346-9E7C-D792611D3465}" />
+    <ID Name="RSFileNode" Value="3" />
+    <ID Name="RSConsole" Value="4" />
+    <ID Name="RSClassLibrary" Value="5" />
+    <ID Name="RSPackageClosed" Value="6" />
+    <ID Name="RSPackageOpen" Value="7" />
+    <ID Name="RSExample" Value="8" />
+    <ID Name="RSBench" Value="9" />
+    <ID Name="RSTest" Value="10" />
   </Symbols>
   <Images>
     <Image Guid="$(AssetsGuid)" ID="$(file_type_cargo)">
@@ -22,6 +27,46 @@
     </Image>
     <Image Guid="$(AssetsGuid)" ID="$(file_type_rust_toolchain)">
       <Source Uri="$(Resources)/file_type_rust_toolchain.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSConsole)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSConsole.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSFileNode)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSFileNode.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSClassLibrary)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSClassLibrary.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSPackageClosed)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSPackageClosed.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSPackageOpen)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSPackageOpen.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSExample)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSExample.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSBench)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSBench.png">
+        <Size Value="32" />
+      </Source>
+    </Image>
+    <Image Guid="$(AssetsGuid)" ID="$(RSTest)" AllowColorInversion="true">
+      <Source Uri="$(Resources)/RSTest.png">
         <Size Value="32" />
       </Source>
     </Image>

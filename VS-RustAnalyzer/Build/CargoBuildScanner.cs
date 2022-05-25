@@ -51,27 +51,19 @@ namespace VS_RustAnalyzer.Build
                         var readerService = _workspace.GetService<ICargoReaderService>();
                         var cargoManifest = readerService.CargoManifestForFile(filePath);
 
-                        //TODO Limit only to bin
-                        //TODO Get output location
-                        // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
-                        var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName) + ".exe";
+                    //TODO Limit only to bin
+                    //TODO Get output location
+                    // See: https://doc.rust-lang.org/cargo/guide/build-cache.html
+                    var output = Path.Combine(Path.GetDirectoryName(filePath), "target", "debug", cargoManifest.PackageName);
 
-                        foreach (var profile in cargoManifest.Profiles)
-                        {
-                            ret.Add(new FileDataValue(BuildConfigurationContext.ContextTypeGuid,
-                                BuildConfigurationContext.DataValueName,
-                                value: null,
-                                target: null,
-                                context: profile));
-                            foreach (var binTarget in cargoManifest.BinTargetPaths(profile))
-                            {
-                                string name = $"{Path.GetFileName(binTarget)} [{cargoManifest.PackageName}]";
-                                IPropertySettings launchSettings = new PropertySettings
-                                {
-                                    [LaunchConfigurationConstants.NameKey] = name,
-                                    [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
-                                    [LaunchConfigurationConstants.ProgramKey] = binTarget,
-                                };
+                    ret.Add(new FileDataValue(new Guid(Builds.BuildType), "Build", null, context: Builds.BuildContextInstance.BuildConfiguration));
+                    IPropertySettings launchSettings = new PropertySettings
+                    {
+                        ["StartupProject"] = filePath,
+                        [LaunchConfigurationConstants.NameKey] = cargoManifest.PackageName,
+                        [LaunchConfigurationConstants.DebugTypeKey] = LaunchConfigurationConstants.NativeOptionKey,
+                        [LaunchConfigurationConstants.TargetKey] = $"{output}.exe",
+                    };
 
                                 ret.Add(new FileDataValue(
                                     DebugLaunchActionContext.ContextTypeGuid,
