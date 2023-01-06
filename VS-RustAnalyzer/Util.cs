@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -20,6 +21,27 @@ namespace VS_RustAnalyzer
         public static bool IsCargoFile(string path)
         {
             return cargoMatcher.IsMatch(path);
+        }
+
+        public static string GetCargoFileForPath(string filePath, string projectRoot)
+        {
+            var currentPath = Path.GetDirectoryName(filePath);
+
+            while (true)
+            {
+                var candidateCargoPath = Path.Combine(currentPath, "cargo.toml");
+                if (currentPath.Equals(projectRoot, StringComparison.OrdinalIgnoreCase))
+                {
+                    return candidateCargoPath;
+                }
+
+                if (File.Exists(candidateCargoPath))
+                {
+                    return candidateCargoPath;
+                }
+
+                currentPath = Path.GetDirectoryName(currentPath);
+            }
         }
     }
 }
