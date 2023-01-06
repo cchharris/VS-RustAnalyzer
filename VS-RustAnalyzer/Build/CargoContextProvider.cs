@@ -45,29 +45,30 @@ namespace VS_RustAnalyzer.Build
             public async Task<IReadOnlyCollection<FileContext>> GetContextsForFileAsync(string filePath, CancellationToken cancellationToken)
             {
                 var fileContexts = new List<FileContext>();
-                if (Util.IsCargoFile(filePath))
+                var cargoFilePath = Util.GetCargoFileForPath(filePath, _workspace.Location);
+                string cargoFolder = Path.GetDirectoryName(cargoFilePath);
+
+                var cargoManifest = _cargoReaderService.CargoManifestForFile(cargoFilePath);
+                /**
+                 * These are the menu items across the top of Visual Studio
+                 */
+                foreach (var profile in cargoManifest.Profiles)
                 {
-                    var cargoManifest = _cargoReaderService.CargoManifestForFile(filePath);
-                    /**
-                     * These are the menu items across the top of Visual Studio
-                     */
-                    foreach (var profile in cargoManifest.Profiles)
-                    {
-                        var buildLaunchCommand = new LaunchCommand("cargo", $"build --profile {profile}",
-                            LaunchCommandOption.None,
-                            workingDirectory: Path.GetDirectoryName(filePath),
-                            projectFullPath:filePath);
-                        var buildActionContext = new BuildActionContext(new LaunchCommand[] { buildLaunchCommand }, profile);
-                        fileContexts.Add(new FileContext(ProviderTypeGuid,
-                            BuildActionContext.ContextTypeGuid, buildActionContext, new string[] { filePath }));
-                    }
-                    var cleanLaunchCommand = new LaunchCommand("cargo", "clean",
+                    var buildLaunchCommand = new LaunchCommand("cargo", $"build --profile {profile} --message-format short",
                         LaunchCommandOption.None,
-                        workingDirectory: Path.GetDirectoryName(filePath),
-                        projectFullPath:filePath);
-                    var cleanActionContext = new BuildActionContext(new LaunchCommand[] { cleanLaunchCommand }, "Cargo clean configuration");
+                        workingDirectory: cargoFolder,
+                        projectFullPath: cargoFilePath);
+                    var buildActionContext = new BuildActionContext(new LaunchCommand[] { buildLaunchCommand }, profile);
                     fileContexts.Add(new FileContext(ProviderTypeGuid,
-                        BuildActionContext.CleanContextTypeGuid, cleanActionContext, new string[] { filePath }));
+                        BuildActionContext.ContextTypeGuid, buildActionContext, new string[] { cargoFilePath }));
+
+                    var cleanLaunchCommand = new LaunchCommand("cargo", $"clean --profile {profile}",
+                        LaunchCommandOption.None,
+                        workingDirectory: cargoFolder,
+                        projectFullPath: cargoFilePath);
+                    var cleanActionContext = new BuildActionContext(new LaunchCommand[] { cleanLaunchCommand }, profile);
+                    fileContexts.Add(new FileContext(ProviderTypeGuid,
+                        BuildActionContext.CleanContextTypeGuid, cleanActionContext, new string[] { cargoFilePath }));
                 }
 
                 return await Task.FromResult(fileContexts);
